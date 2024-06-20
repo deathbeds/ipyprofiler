@@ -1,0 +1,26 @@
+.jp-LinkedOutputView .jp-OutputArea:has(.jprf-FlamegraphPanel) {
+  display: flex;
+  flex-direction: column;
+}
+
+.jp-LinkedOutputView .jp-OutputArea-output:has(.jprf-FlamegraphPanel) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.jp-LinkedOutputView .jp-OutputArea-child:only-child:has(.jprf-FlamegraphPanel) {
+  height: 100%;
+  flex: 1;
+  flex-direction: column;
+}
+
+.jprf-FlamegraphPanel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.jprf-FlamegraphPanel iframe {
+  flex: 1;
+}

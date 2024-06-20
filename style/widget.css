@@ -1,0 +1,17 @@
+.jprf-FlamegraphView {
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.jprf-Pyinstrument-Tab {
+  max-height: 100vh;
+  flex: 1;
+}
+
+.jupyter-widgets.widget-tab.jprf-Pyinstrument-Tab > .widget-tab-contents {
+  padding: 0;
+}

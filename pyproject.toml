@@ -1,0 +1,115 @@
+[build-system]
+requires = ["flit_core >=3.9.0,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "ipyprofiler"
+description = "Jupyter Widgets for visualizing profiler data."
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["traitlets >=5.1", "ipywidgets >=7,<9"]
+authors = [{name = "ipyprofiler contributors"}]
+readme = "README.md"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: Jupyter :: JupyterLab :: 4",
+  "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
+  "Framework :: Jupyter :: JupyterLab :: Extensions",
+  "Framework :: Jupyter",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python",
+  "Topic :: File Formats :: JSON :: JSON Schema",
+  "Topic :: File Formats :: JSON",
+]
+license.file = "LICENSE"
+
+[project.urls]
+"Bug Tracker" = "https://github.com/deathbeds/ipyprofiler/issues"
+Changelog = "https://github.com/deathbeds/ipyprofiler/blob/main/CHANGELOG.md"
+Documentation = "https://ipyprofiler.rtfd.io"
+PyPI = "https://pypi.org/project/ipyprofiler"
+Source = "https://github.com/deathbeds/ipyprofiler/tree/main"
+
+[tool.flit.external-data]
+directory = "src/_d"
+
+# ruff #########################################################################
+[tool.ruff]
+cache-dir = "build/.cache/ruff"
+extend-include = ["*.ipynb"]
+extend-exclude = ["Untitled*.*", "untitled*.*", "**/.ipynb_checkpoints"]
+include = ["{tests,src/ipyprofiler,examples/files}/**/*.{py,ipynb}"]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "ANN101",
+  "ANN102",
+  "ANN204",
+  "ANN401",
+  "COM812",
+  "D203",
+  "D211",
+  "D213",
+  "FBT001",
+  "FBT002",
+  "ISC001",
+  "N812",
+  "TCH001",
+  "UP006",
+  "UP035",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["T201", "ANN201", "D103", "ANN001", "PLR2004", "ERA001", "PLE1142", "F811"]
+"tests/**/*.py" = ["S101", "SLF001", "PLR2004", "T201"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ipyprofiler"]
+
+# pytest #######################################################################
+[tool.pytest.ini_options]
+cache_dir = "build/.cache/pytest"
+generate_report_on_test = true
+testpaths = [
+  "tests",
+]
+addopts = [
+  "--html=build/reports/pytest.html",
+  "--self-contained-html",
+  "--cov-report=html:build/reports/htmlcov",
+  "--cov-report=term-missing:skip-covered",
+  "--color=yes",
+  "--cov=ipyprofiler",
+  "--cov-branch",
+  "--cov-context=test",
+  "--no-cov-on-fail",
+  "--cov-fail-under=100",
+  "-Werror",
+  "--tb=long",
+  "--durations=3",
+  "-vv",
+]
+
+# coverage #####################################################################
+[tool.coverage.run]
+data_file = "build/reports/.coverage"
+
+[tool.coverage.html]
+show_contexts = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "except ImportError as err:",
+  "if TYPE_CHECKING:",
+  "pragma: no cover",
+  "NotImplementedError",
+  "@abc.abstractmethod",
+]

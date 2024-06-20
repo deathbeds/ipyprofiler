@@ -1,0 +1,49 @@
+{
+  "name": "@deathbeds/jupyter-profiler",
+  "version": "0.1.0",
+  "files": [
+    "{LICENSE,README.md,*.js}",
+    "{lib,style,js}/**/*.{json,js,css,d.ts}"
+  ],
+  "dependencies": {
+    "@jupyter-widgets/base": "6.*",
+    "@jupyter-widgets/controls": "5.*",
+    "@jupyter-widgets/jupyterlab-manager": "5.*",
+    "@jupyterlab/application": "4.*",
+    "speedscope": "1.20.0"
+  },
+  "sideEffects": [
+    "style/*.css"
+  ],
+  "devDependencies": {
+    "@jupyterlab/builder": "4.*",
+    "copy-webpack-plugin": "^12.0.2",
+    "prettier": "^3.3.2",
+    "prettier-plugin-sort-imports": "^1.8.5",
+    "prettier-plugin-sort-json": "^4.0.0",
+    "source-map-loader": "^5.0.0",
+    "typescript": "~5.4.5"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 88,
+    "proseWrap": "always"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jupyterlab": {
+    "extension": "lib/plugin.js",
+    "outputDir": "src/_d/share/jupyter/labextensions/@deathbeds/jupyter-profiler",
+    "webpackConfig": "./webpack.config.js",
+    "sharedPackages": {
+      "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      },
+      "@jupyter-widgets/controls": {
+        "bundled": false,
+        "singleton": true
+      }
+    }
+  }
+}

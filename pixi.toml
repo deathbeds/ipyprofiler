@@ -1,0 +1,286 @@
+"$schema" = "https://pixi.sh/v0.24.2/schema/manifest/schema.json"
+
+[tasks]
+setup = {depends-on = ["setup-js", "pip-build", "setup-ext"]}
+fix = {depends-on = ["fix-taplo", "fix-prettier", "fix-nbstripout", "fix-ruff"]}
+lint = {depends-on = ["lint-prettier", "lint-ruff", "lint-actionlint"]}
+test = {depends-on = ["test-pytest"]}
+build = {depends-on = ["build-js-lib", "build-js-ext"]}
+dist = {depends-on = ["dist-py", "dist-npm"]}
+docs = {depends-on = ["docs-lite", "docs-sphinx"]}
+dev = {depends-on = ["fix", "lint", "dist", "test", "docs"]}
+
+[tasks.pip-]
+cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
+&& mkdir -p build/pip-freeze
+&& python -m pip install -e .
+  -vv
+  --no-deps
+  --ignore-installed
+  --no-build-isolation
+  --disable-pip-version-check
+&& pip check
+&& pip freeze > build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
+"""
+
+# setup ########################################################################
+[feature.tasks-build.tasks.pip-build]
+cmd = "pixi r -e build pip-"
+inputs = ["pyproject.toml"]
+outputs = ["build/pip-freeze/build.txt"]
+
+[feature.tasks-build.tasks.setup-js]
+cmd = "jlpm"
+inputs = ["package.json", "yarn.lock", ".yarnrc.yml"]
+outputs = ["yarn.lock", "node_modules/.yarn-state.yml"]
+
+[feature.tasks-build.tasks.setup-ext]
+cmd = """jupyter labextension develop --overwrite --debug
+  && jupyter labextension list
+"""
+inputs = ["{package.json,yarn.lock,.yarnrc.yml}"]
+depends-on = ["setup-js", "pip-build", "build-js-ext"]
+
+# lint/fix #####################################################################
+[tasks.prettier-]
+cmd = """
+jlpm prettier
+  --list-different
+  "*.{md,json,yml,js}"
+  "{js,style,docs,.github}/**/*.{json,ts,css,md}"
+"""
+
+[feature.tasks-lint.tasks.fix-prettier]
+cmd = "pixi r prettier- --write"
+depends-on = ["setup-js"]
+inputs = ["*.{md,json,yml,js}", "{js,style,docs,.github}", "!.ipynb_checkpoints"]
+
+[feature.tasks-lint.tasks.lint-prettier]
+cmd = "pixi r prettier-"
+depends-on = ["setup-js"]
+inputs = [
+  "*.{md,json,yml,js}",
+  "{js,style,docs,.github}",
+  "!.ipynb_checkpoints/",
+]
+
+[feature.tasks-lint.tasks.fix-ruff]
+cmd = "ruff format && ruff check --fix-only"
+inputs = [
+  "{tests,src/ipyprofiler}/**/*.py",
+  "pyproject.toml",
+  "examples/files/**/*.ipynb",
+  "!.ipynb_checkpoints/",
+]
+
+[feature.tasks-lint.tasks.lint-ruff]
+cmd = "ruff format --check && ruff check"
+inputs = [
+  "{tests,src/ipyprofiler}/**/*.py",
+  "pyproject.toml",
+  "examples/files/**/*.ipynb",
+  "!.ipynb_checkpoints/",
+]
+
+[feature.tasks-lint.tasks.fix-taplo]
+cmd = """taplo fmt
+  --option=array_auto_collapse=false
+  --option=array_auto_expand=true
+  --option=compact_inline_tables=true
+  --option=column_width=88
+  --option=indent_string="  "
+  *.toml"""
+outputs = ["*.toml"]
+
+[feature.tasks-lint.tasks.fix-nbstripout]
+cmd = """nbstripout --keep-id examples/files/*.ipynb"""
+inputs = ["examples/files/**/*.ipynb", "!.ipynb_checkpoints/"]
+
+[feature.tasks-lint.tasks.lint-actionlint]
+cmd = "actionlint -shellcheck=shellcheck -pyflakes=pyflakes"
+inputs = [".github/workflows"]
+
+# build ########################################################################
+[feature.tasks-build.tasks.build-js-lib]
+cmd = "jlpm tsc -b js --verbose"
+inputs = ["package.json", "js", "tsconfig*.json"]
+outputs = ["build/{root,src}.tsbuildinfo", "lib"]
+depends-on = ["setup-js"]
+
+[feature.tasks-build.tasks.build-js-ext]
+cmd = "jupyter labextension build"
+inputs = ["{lib,style}", "{package.json,webpack.config.js}"]
+outputs = ["src/_d/share"]
+depends-on = ["build-js-lib"]
+
+# test #########################################################################
+[feature.tasks-test.tasks.pip-test]
+cmd = "pixi r -e test pip-"
+inputs = ["pyproject.toml"]
+outputs = ["build/pip-freeze/test.txt"]
+
+[feature.tasks-test.tasks.test-pytest]
+cmd = "pytest"
+inputs = ["pyproject.toml", "{src,tests}/**/*.py", "src/_d"]
+outputs = ["build/reports/{pytest.html,htmlcov/status.json}"]
+depends-on = ["pip-test", "build-js-ext"]
+
+# dist #########################################################################
+[feature.tasks-build.tasks.dist-py]
+cmd = "pyproject-build . --no-isolation"
+inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d"]
+outputs = ["dist/*.{whl,tar.gz}"]
+depends-on = ["build-js-ext"]
+
+[feature.tasks-build.tasks.dist-npm]
+cmd = "mkdir -p dist && cd dist && npm pack .."
+inputs = ["lib", "js", "style", "{.npmignore,README.md,LICENSE,package.json}"]
+outputs = ["dist/*.tgz"]
+depends-on = ["build-js-lib"]
+
+# interactive ##################################################################
+[feature.tasks-lab.tasks.pip-lab]
+cmd = "pixi r -e lab pip-"
+inputs = ["pyproject.toml"]
+outputs = ["build/pip-freeze/lab.txt"]
+
+[feature.tasks-lab.tasks.lab]
+cmd = "jupyter lab --no-browser --debug"
+depends-on = ["setup", "pip-lab"]
+
+[feature.tasks-lab.tasks.watch-lib]
+cmd = "jlpm tsc -b js -w"
+depends-on = ["build-js-lib"]
+
+[feature.tasks-lab.tasks.watch-ext]
+cmd = "jupyter labextension watch"
+depends-on = ["build-js-ext"]
+
+# docs #########################################################################
+[feature.tasks-docs.tasks.pip-docs]
+cmd = "pixi r -e docs pip-"
+inputs = ["pyproject.toml"]
+outputs = ["build/pip-freeze/docs.txt"]
+
+[feature.tasks-docs.tasks.docs-lite]
+cmd = "cd examples && jupyter-lite doit -- pre_archive:report:SHA256SUMS"
+depends-on = ["dist-py", "pip-docs"]
+inputs = ["dist", "examples/files", "examples/*.json"]
+outputs = ["build/docs-app/SHA256SUMS"]
+
+[feature.tasks-docs.tasks.docs-sphinx]
+cmd = "sphinx-build -b html -W --keep-going docs build/docs"
+depends-on = ["docs-lite"]
+inputs = ["build/docs-app/SHA256SUMS", "*.toml", "docs"]
+outputs = ["build/docs/.buildinfo"]
+
+[feature.tasks-docs.tasks.docs-serve]
+cmd = "cd build/docs && python -m http.server -b 127.0.0.1"
+depends-on = ["docs-sphinx"]
+
+# sphinx #######################################################################
+[tool.sphinx]
+author = "{{ ppt.project.authors[0].name }}"
+project = "{{ ppt.project.name }}"
+copyright = "2024 {{ ppt.project.authors[0].name }}"
+exclude_patterns = ["rtd.rst"]
+extensions = [
+  "sphinx.ext.autodoc",
+  "sphinx.ext.autosectionlabel",
+  "sphinx.ext.intersphinx",
+  "sphinx.ext.viewcode",
+  "myst_nb",
+]
+autosectionlabel_prefix_document = true
+myst_heading_anchors = 3
+suppress_warnings = ["autosectionlabel.*"]
+templates_path = ["_templates"]
+html_static_path = ["../build/docs-app", "_static"]
+html_theme = "pydata_sphinx_theme"
+html_css_files = ["theme.css"]
+release = "{{ ppt.project.version }}"
+version = "{{ ppt.project.version.split('.')[0] }}"
+autoclass_content = "both"
+always_document_param_types = true
+typehints_defaults = "comma"
+typehints_use_signature_return = true
+
+[tool.sphinx.html_theme_options]
+github_url = "{{ ppt.project.urls.Source }}"
+header_links_before_dropdown = 10
+navigation_with_keys = false
+pygments_dark_style = "github-dark-colorblind"
+pygments_light_style = "github-light-colorblind"
+use_edit_page_button = true
+icon_links = [
+  {name = "PyPI", url = "{{ ppt.project.urls.PyPI }}", icon = "fa-brands fa-python"},
+]
+
+[tool.sphinx.html_context]
+docs_path = "docs"
+github_user = "deathbeds"
+github_repo = "ipyprofiler"
+github_version = "main"
+
+[tool.sphinx._intersphinx_mapping]
+python = "https://docs.python.org/3"
+
+# deps #########################################################################
+[feature.deps-run.dependencies]
+ipywidgets = "*"
+pyinstrument = "*"
+
+[feature.deps-lab.dependencies]
+jupyterlab = ">=4.2.2,<4.3"
+
+[feature.deps-build.dependencies]
+flit-core = ">=3.9.0,<4"
+pip = "*"
+python = "3.12.*"
+python-build = "*"
+
+[feature.deps-node.dependencies]
+nodejs = "20.*"
+
+[feature.deps-lint.dependencies]
+ruff = "*"
+taplo = "*"
+nbstripout = "*"
+actionlint-with-all = "*"
+
+[feature.deps-test.dependencies]
+pytest = ">=8,<9"
+pytest-cov = "*"
+pytest-html = "*"
+
+[feature.deps-docs.dependencies]
+ipywidgets = "*"
+jupyterlite-core = "0.3.*"
+jupyterlite-pyodide-kernel = "0.3.*"
+myst-nb = "*"
+pydata-sphinx-theme = "*"
+python-libarchive-c = "*"
+
+# envs ########################################################################
+
+[environments]
+build = ["deps-build", "deps-lab", "deps-node", "deps-run", "tasks-build"]
+lint = ["deps-lint", "deps-node", "deps-lab", "tasks-lint"]
+docs = ["deps-docs", "deps-lab", "deps-build", "tasks-docs"]
+lab = [
+  "deps-lab",
+  "deps-lint",
+  "deps-run",
+  "deps-node",
+  "deps-build",
+  "deps-test",
+  "tasks-lab",
+]
+test = ["deps-test", "deps-run", "deps-build", "tasks-test"]
+
+# meta ########################################################################
+
+[project]
+name = "ipyprofiler"
+platforms = ["linux-64"]
+channels = ["conda-forge"]

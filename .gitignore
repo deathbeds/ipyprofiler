@@ -1,0 +1,11 @@
+__pycache__/
+.ipynb_checkpoints/
+.jupyterlite*
+.pixi/
+build/
+dist/
+lib/
+node_modules/
+src/_d/
+untitled.*
+Untitled.*

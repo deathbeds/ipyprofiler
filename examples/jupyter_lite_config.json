@@ -1,0 +1,9 @@
+{
+    "LiteBuildConfig": {
+        "output_dir": "../build/docs-app",
+        "cache_dir": "../build/.cache/lite"
+    },
+    "PipliteAddon": {
+        "piplite_urls": ["../dist"]
+    }
+}
