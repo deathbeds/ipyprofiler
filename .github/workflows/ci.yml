@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["*"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  CACHE_EPOCH: "0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.24.2
+          cache: true
+          environments: build
+      - name: cache (node)
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: |
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - run: pixi run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ipfr-${{ github.run_number }}-dist
+          path: ./dist
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.24.2
+          cache: true
+          environments: >-
+            build
+            lint
+      - name: cache (node)
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: |
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - run: pixi run lint
+      - run: rm -rf node_modules/.cache
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.24.2
+          cache: true
+          environments: >-
+            build
+            test
+      - name: cache (node)
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: |
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - run: pixi run test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ipfr-${{ github.run_number }}-test
+          path: ./build/reports
+
+  docs:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.24.2
+          cache: true
+          environments: >-
+            build
+            docs
+      - name: cache (node)
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: |
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: ipfr-${{ github.run_number }}-dist
+      - run: pixi run docs-lite
+      - run: pixi run docs-sphinx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ipfr-${{ github.run_number }}-docs
+          path: ./build/docs
