@@ -14,7 +14,17 @@
 
 ## Install
 
-> TBD
+> **This package is not yet released.**
+>
+> ```bash
+> pip install ipyprofiler
+> ```
+>
+> To also install optional python-specific integration:
+>
+> ```bash
+> pip install ipyprofiler[pyinstrument]
+> ```
 
 ## Screenshots
 
