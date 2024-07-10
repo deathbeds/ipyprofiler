@@ -12,7 +12,7 @@ dependencies = [
   "jinja2 >=3.0.3",
   "traitlets >=5.1",
 ]
-optional-dependencies.pyinstrument = ["pyinstrument >=4.6.1"]
+optional-dependencies.pyinstrument = ["pyinstrument >=4.4.0"]
 authors = [{name = "ipyprofiler contributors"}]
 readme = "README.md"
 classifiers = [

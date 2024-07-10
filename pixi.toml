@@ -228,8 +228,8 @@ python = "https://docs.python.org/3"
 
 # deps #########################################################################
 [feature.deps-run.dependencies]
-ipywidgets = "*"
-pyinstrument = "*"
+ipywidgets = ">=7,<9"
+pyinstrument = ">=4.4.0"
 
 [feature.deps-lab.dependencies]
 jupyterlab = ">=4.2.2,<4.3"
