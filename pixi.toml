@@ -118,6 +118,7 @@ depends-on = ["build-js-lib"]
 cmd = "pixi r -e test pip-"
 inputs = ["pyproject.toml"]
 outputs = ["build/pip-freeze/test.txt"]
+depends-on = ["build-js-ext"]
 
 [feature.tasks-test.tasks.test-pytest]
 cmd = "pytest"

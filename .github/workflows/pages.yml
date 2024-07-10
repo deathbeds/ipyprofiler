@@ -27,8 +27,9 @@ jobs:
           environments: >-
             build
             docs
-      - run: pixi run -e docs docs-lite
-      - run: pixi run -e docs docs
+      - run: pixi run dist
+      - run: pixi run docs-lite
+      - run: pixi run docs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/docs
