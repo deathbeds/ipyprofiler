@@ -31,7 +31,7 @@ export class ProfileJSONView extends DOMWidgetView {
 
   initialize(parameters: any) {
     super.initialize(parameters);
-    this.luminoWidget.addClass(STYLE.widgetFileView);
+    this.el.classList.add(STYLE.widgetFileView);
     this.update();
   }
 
@@ -39,7 +39,7 @@ export class ProfileJSONView extends DOMWidgetView {
     let { _pre } = this;
     if (_pre == null) {
       _pre = this._pre = document.createElement('pre');
-      this.luminoWidget.node.appendChild(this._pre);
+      this.el.appendChild(this._pre);
     }
 
     _pre.innerHTML = this.model.get('value') || 'None';
@@ -77,7 +77,7 @@ export class FlamegraphView extends BoxView {
 
   render() {
     super.render();
-    this.luminoWidget.addClass(STYLE.widgetView);
+    this.el.classList.add(STYLE.widgetView);
     this.flamegraphModel.on('change:profile', this.onProfileChange, this);
     this.flamegraphModel.on('change:view', this.onModelChange, this);
     this.onProfileChange();
@@ -99,7 +99,7 @@ export class FlamegraphView extends BoxView {
     let { _panel, flamegraphModel } = this;
     if (!_panel) {
       _panel = this._panel = new FlamegraphPanel();
-      this.luminoWidget.addWidget(_panel);
+      (this.luminoWidget || this.pWidget).addWidget(_panel);
     }
     const profile = flamegraphModel.get('profile')?.get('value') || null;
     const view = flamegraphModel.get('view');

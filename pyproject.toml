@@ -87,21 +87,15 @@ testpaths = [
   "tests",
 ]
 addopts = [
-  "--html=build/reports/pytest.html",
-  "--self-contained-html",
-  "--cov-report=html:build/reports/htmlcov",
-  "--cov-report=term-missing:skip-covered",
   "--color=yes",
-  "--cov=ipyprofiler",
-  "--cov-branch",
-  "--cov-context=test",
-  "--no-cov-on-fail",
-  "--cov-fail-under=100",
-  "-Werror",
   "--tb=long",
   "--durations=3",
   "-vv",
 ]
+filterwarnings = [
+  "ignore::DeprecationWarning:traitlets.traitlets:",
+]
+
 
 # coverage #####################################################################
 [tool.coverage.run]

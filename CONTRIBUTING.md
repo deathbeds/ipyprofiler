@@ -17,7 +17,7 @@ If using `mamba` or `conda` (or some other `$CONDA_EXE`):
 
 ```bash
 # replace `mamba` with your CONDA_EXE
-mamba install -c conda-forge pixi==0.24.2
+mamba install -c conda-forge pixi==0.25.0
 ```
 
 <details><summary><i>Why <code>pixi</code>?</i></summary>
