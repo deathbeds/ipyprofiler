@@ -38,6 +38,10 @@ jobs:
         with:
           name: ipfr-${{ github.run_number }}-dist
           path: ./dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ipfr-${{ github.run_number }}-ext-src
+          path: ./src/_d
 
   lint:
     runs-on: ubuntu-latest
@@ -80,16 +84,10 @@ jobs:
           pixi-version: v0.25.0
           cache: true
           environments: build ${{ matrix.test-env }}
-      - name: cache (node)
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: node_modules
-          key: |
-            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
       - uses: actions/download-artifact@v4
         with:
           name: ipfr-${{ github.run_number }}-dist
+      - run: pixi run -e ${{ matrix.test-env }} preflight-ci-test
       - run: pixi run ${{ matrix.test-task }}
       - uses: actions/upload-artifact@v4
         if: always()

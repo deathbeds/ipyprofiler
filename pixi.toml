@@ -41,8 +41,8 @@ docs = {description = "build ALL docs", depends-on = ["docs-lite", "docs-sphinx"
 # reusable unbound tasks #######################################################
 [tasks.pip-e-]
 description = "install an editable package"
-cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
-&& mkdir -p build/pip-freeze
+cmd = """rm -rf build/pip-freeze-e/$PIXI_ENVIRONMENT_NAME.txt
+&& mkdir -p build/pip-freeze-e
 && python -m pip install -e .
   -vv
   --no-deps
@@ -50,13 +50,13 @@ cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
   --no-build-isolation
   --disable-pip-version-check
 && pip check
-&& pip freeze > build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
+&& pip freeze > build/pip-freeze-e/$PIXI_ENVIRONMENT_NAME.txt
 """
 
 [tasks.pip-whl-]
 description = "install a built wheel"
-cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
-&& mkdir -p build/pip-freeze
+cmd = """rm -rf build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
+&& mkdir -p build/pip-freeze-whl
 && python -m pip install ipyprofiler
   -vv
   --no-deps
@@ -65,7 +65,18 @@ cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
   --find-links=dist
   --no-index
 && pip check
-&& pip freeze > build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
+&& pip freeze > build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
+"""
+
+[tasks.ci-preflight-test]
+description = "set up some skipped tasks for testing in CI"
+cmd = """
+mkdir -p build/skip
+&& touch
+  build/skip/jlpm
+  build/skip/tsc
+  build/skip/ext
+  build/skip/whl
 """
 
 # setup ########################################################################
@@ -73,12 +84,12 @@ cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
 description = "install an editable package in the build env"
 cmd = "pixi r -e build pip-e-"
 inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/build.txt"]
+outputs = ["build/pip-freeze-e/build.txt"]
 
 [feature.tasks-build.tasks.setup-js]
 description = "set up nodejs environment"
-cmd = "jlpm"
-inputs = ["package.json", "yarn.lock", ".yarnrc.yml"]
+cmd = "ls build/skip/jlpm || jlpm"
+inputs = ["package.json", "yarn.lock", ".yarnrc.yml", "build/skip"]
 outputs = ["yarn.lock", "node_modules/.yarn-state.yml"]
 
 [feature.tasks-build.tasks.setup-ext]
@@ -160,28 +171,28 @@ inputs = [".github/workflows"]
 # build ########################################################################
 [feature.tasks-build.tasks.build-js-lib]
 description = "build js from ts"
-cmd = "jlpm tsc -b js --verbose"
-inputs = ["package.json", "js", "tsconfig*.json"]
+cmd = "ls build/skip/tsc || jlpm tsc -b js --verbose"
+inputs = ["package.json", "js", "tsconfig*.json", "build/skip"]
 outputs = ["build/{root,src}.tsbuildinfo", "lib"]
 depends-on = ["setup-js"]
 
 [feature.tasks-build.tasks.build-js-ext]
 description = "build the labextension"
-cmd = "jupyter labextension build"
-inputs = ["{lib,style}", "{package.json,webpack.config.js}"]
+cmd = "ls build/skip/ext || jupyter labextension build"
+inputs = ["{lib,style}", "{package.json,webpack.config.js}", "build/skip"]
 outputs = ["src/_d/share"]
 depends-on = ["build-js-lib"]
 
 # test #########################################################################
 [feature.tasks-test.tasks.pip-test]
-description = "install an editable package in the test environment"
-cmd = "pixi r -e test pip-e-"
-inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/test.txt"]
-depends-on = ["build-js-ext"]
+description = "install a built package in the test environment"
+cmd = "pixi r -e test pip-whl-"
+inputs = ["pyproject.toml", "dist/*.whl"]
+outputs = ["build/pip-freeze-whl/test.txt"]
+depends-on = ["dist-py"]
 
 [feature.tasks-test.tasks.test-pytest]
-description = "test the editable package with coverage"
+description = "test the package with coverage"
 cmd = """
 pytest
   -Werror
@@ -195,9 +206,9 @@ pytest
   --no-cov-on-fail
   --cov-fail-under=100
 """
-inputs = ["pyproject.toml", "{src,tests}/**/*.py", "src/_d"]
+inputs = ["pyproject.toml", "tests/**/*.py", "dist/*.whl"]
 outputs = ["build/reports/test/{pytest.html,htmlcov/status.json}"]
-depends-on = ["pip-test", "build-js-ext"]
+depends-on = ["pip-test"]
 
 # test-oldest ##################################################################
 [feature.tasks-test-oldest.tasks.pip-test-oldest]
@@ -205,7 +216,7 @@ description = "install the built package in the oldest compatible environment"
 cmd = "pixi r -e test-oldest pip-whl-"
 inputs = ["dist/*.whl"]
 outputs = [
-  "build/pip-freeze/test-oldest.txt",
+  "build/pip-freeze-whl/test-oldest.txt",
   ".pixi/envs/test-oldest/share/jupyter/labextensions/@deathbeds/jupyter-profiler/package.json",
 ]
 depends-on = ["dist-py"]
@@ -229,8 +240,12 @@ depends-on = ["setup", "pip-test-oldest"]
 # dist #########################################################################
 [feature.tasks-build.tasks.dist-py]
 description = "build python distributions"
-cmd = """pyproject-build . --no-isolation && rm -rf build/pip-freeze/test-oldest.txt"""
-inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d"]
+cmd = """
+rm -rf build/pip-freeze-whl
+&& ls build/skip/whl
+|| pyproject-build . --no-isolation
+"""
+inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d", "build/skip"]
 outputs = ["dist/*.{whl,tar.gz}"]
 depends-on = ["build-js-ext"]
 
@@ -246,7 +261,7 @@ depends-on = ["build-js-lib"]
 description = "install an editable package in the interactive environment"
 cmd = "pixi r -e lab pip-e-"
 inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/lab.txt"]
+outputs = ["build/pip-freeze-e/lab.txt"]
 
 [feature.tasks-lab.tasks.lab]
 description = "start jupyterlab"
@@ -265,10 +280,10 @@ depends-on = ["build-js-ext"]
 
 # docs #########################################################################
 [feature.tasks-docs.tasks.pip-docs]
-description = "install an editable package in the docs environment"
-cmd = "pixi r -e docs pip-e-"
-inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/docs.txt"]
+description = "install a built package in the docs environment"
+cmd = "pixi r -e docs pip-whl-"
+inputs = ["dist/*.whl"]
+outputs = ["build/pip-freeze-whl/docs.txt"]
 
 [feature.tasks-docs.tasks.docs-lite]
 description = "build the lite site"
