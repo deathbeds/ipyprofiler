@@ -57,13 +57,11 @@ cmd = """rm -rf build/pip-freeze-e/$PIXI_ENVIRONMENT_NAME.txt
 description = "install a built wheel"
 cmd = """rm -rf build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
 && mkdir -p build/pip-freeze-whl
-&& python -m pip install ipyprofiler
+&& python -m pip install dist/*.whl
   -vv
   --no-deps
   --ignore-installed
   --disable-pip-version-check
-  --find-links=dist
-  --no-index
 && pip check
 && pip freeze > build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
 """
