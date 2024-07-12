@@ -68,10 +68,17 @@ cmd = """rm -rf build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
 && pip freeze > build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
 """
 
+[tasks.ci-preflight-node]
+description = "set up some skipped tasks for building in CI"
+cmd = """mkdir -p build/skip
+&& ls node_modules/.yarn-state.yml
+&& touch build/skip/jlpm
+|| echo "will install nodejs packages"
+"""
+
 [tasks.ci-preflight-test]
 description = "set up some skipped tasks for testing in CI"
-cmd = """
-mkdir -p build/skip
+cmd = """mkdir -p build/skip
 && touch
   build/skip/jlpm
   build/skip/tsc

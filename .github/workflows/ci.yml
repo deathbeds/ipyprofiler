@@ -33,6 +33,7 @@ jobs:
           path: node_modules
           key: |
             ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - run: pixi run -e build ci-preflight-node
       - run: pixi run dist
       - uses: actions/upload-artifact@v4
         with:
@@ -60,6 +61,7 @@ jobs:
           path: node_modules
           key: |
             ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - run: pixi run -e build ci-preflight-node
       - run: pixi run lint
 
   test:
@@ -87,7 +89,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ipfr-${{ github.run_number }}-dist
-      - run: pixi run -e ${{ matrix.test-env }} preflight-ci-test
+      - run: pixi run -e ${{ matrix.test-env }} ci-preflight-test
       - run: pixi run ${{ matrix.test-task }}
       - uses: actions/upload-artifact@v4
         if: always()
