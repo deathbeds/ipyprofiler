@@ -92,10 +92,17 @@ class ProfileJSON(IPyProfilerBase):
     @T.default("json_rewrites")
     def _default_json_rewrites(self) -> Dict[str, str]:
         """Provide default rewrite patterns for profile JSON."""
+        path_escapes = {
+            re.escape(f"{p}"): ""
+            for p in [
+                Path.cwd(),
+                site.getsitepackages()[0],
+                Path(site.getsitepackages()[0]).parent,
+            ]
+        }
+
         return {
-            str(Path.cwd()): ".",
             r'"[^"]+?ipykernel_[\d]+.[\d]+\.py"': '"__main__"',
-            site.getsitepackages()[0]: "",
-            str(Path(site.getsitepackages()[0]).parent): "",
             r"ipython-input-\d+-\d+": "__main__",
+            **path_escapes,
         }

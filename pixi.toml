@@ -1,18 +1,48 @@
-"$schema" = "https://pixi.sh/v0.24.2/schema/manifest/schema.json"
+"$schema" = "https://pixi.sh/v0.25.0/schema/manifest/schema.json"
 
 [tasks]
-setup = {depends-on = ["setup-js", "pip-build", "setup-ext"]}
-fix = {depends-on = ["fix-taplo", "fix-prettier", "fix-nbstripout", "fix-ruff"]}
-lint = {depends-on = ["lint-prettier", "lint-ruff", "lint-actionlint"]}
-test = {depends-on = ["test-pytest"]}
-build = {depends-on = ["build-js-lib", "build-js-ext"]}
-dist = {depends-on = ["dist-py", "dist-npm"]}
-docs = {depends-on = ["docs-lite", "docs-sphinx"]}
-dev = {depends-on = ["fix", "lint", "dist", "test", "docs"]}
+dev = {description = "run ALL tasks", depends-on = [
+  "fix",
+  "lint",
+  "dist",
+  "test",
+  "docs",
+]}
+setup = {description = "perform ALL setup", depends-on = [
+  "setup-js",
+  "pip-build",
+  "setup-ext",
+]}
+fix = {description = "fix ALL style", depends-on = [
+  "fix-taplo",
+  "fix-prettier",
+  "fix-nbstripout",
+  "fix-ruff",
+]}
+lint = {description = "check ALL style", depends-on = [
+  "lint-prettier",
+  "lint-ruff",
+  "lint-actionlint",
+]}
+test = {description = "run ALL tests", depends-on = [
+  "test-pytest",
+  "test-pytest-oldest",
+]}
+build = {description = "build ALL intermediate artifacts", depends-on = [
+  "build-js-lib",
+  "build-js-ext",
+]}
+dist = {description = "build ALL distribution artifacts", depends-on = [
+  "dist-py",
+  "dist-npm",
+]}
+docs = {description = "build ALL docs", depends-on = ["docs-lite", "docs-sphinx"]}
 
-[tasks.pip-]
-cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
-&& mkdir -p build/pip-freeze
+# reusable unbound tasks #######################################################
+[tasks.pip-e-]
+description = "install an editable package"
+cmd = """rm -rf build/pip-freeze-e/$PIXI_ENVIRONMENT_NAME.txt
+&& mkdir -p build/pip-freeze-e
 && python -m pip install -e .
   -vv
   --no-deps
@@ -20,21 +50,55 @@ cmd = """rm -rf build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
   --no-build-isolation
   --disable-pip-version-check
 && pip check
-&& pip freeze > build/pip-freeze/$PIXI_ENVIRONMENT_NAME.txt
+&& pip freeze > build/pip-freeze-e/$PIXI_ENVIRONMENT_NAME.txt
+"""
+
+[tasks.pip-whl-]
+description = "install a built wheel"
+cmd = """rm -rf build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
+&& mkdir -p build/pip-freeze-whl
+&& python -m pip install dist/*.whl
+  -vv
+  --no-deps
+  --ignore-installed
+  --disable-pip-version-check
+&& pip check
+&& pip freeze > build/pip-freeze-whl/$PIXI_ENVIRONMENT_NAME.txt
+"""
+
+[tasks.ci-preflight-node]
+description = "set up some skipped tasks for building in CI"
+cmd = """mkdir -p build/skip
+&& ls node_modules/.yarn-state.yml
+&& touch build/skip/jlpm
+|| echo "will install nodejs packages"
+"""
+
+[tasks.ci-preflight-test]
+description = "set up some skipped tasks for testing in CI"
+cmd = """mkdir -p build/skip
+&& touch
+  build/skip/jlpm
+  build/skip/tsc
+  build/skip/ext
+  build/skip/whl
 """
 
 # setup ########################################################################
 [feature.tasks-build.tasks.pip-build]
-cmd = "pixi r -e build pip-"
+description = "install an editable package in the build env"
+cmd = "pixi r -e build pip-e-"
 inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/build.txt"]
+outputs = ["build/pip-freeze-e/build.txt"]
 
 [feature.tasks-build.tasks.setup-js]
-cmd = "jlpm"
-inputs = ["package.json", "yarn.lock", ".yarnrc.yml"]
+description = "set up nodejs environment"
+cmd = "ls build/skip/jlpm || jlpm"
+inputs = ["package.json", "yarn.lock", ".yarnrc.yml", "build/skip"]
 outputs = ["yarn.lock", "node_modules/.yarn-state.yml"]
 
 [feature.tasks-build.tasks.setup-ext]
+description = "set up the extension in the build environment"
 cmd = """jupyter labextension develop --overwrite --debug
   && jupyter labextension list
 """
@@ -43,19 +107,23 @@ depends-on = ["setup-js", "pip-build", "build-js-ext"]
 
 # lint/fix #####################################################################
 [tasks.prettier-]
+description = "run prettier"
 cmd = """
 jlpm prettier
+  --cache-location=build/.cache/prettier
   --list-different
   "*.{md,json,yml,js}"
-  "{js,style,docs,.github}/**/*.{json,ts,css,md}"
+  "{js,style,docs,.github}/**/*.{json,ts,css,md,yml}"
 """
 
 [feature.tasks-lint.tasks.fix-prettier]
+description = "run prettier and write changes"
 cmd = "pixi r prettier- --write"
 depends-on = ["setup-js"]
 inputs = ["*.{md,json,yml,js}", "{js,style,docs,.github}", "!.ipynb_checkpoints"]
 
 [feature.tasks-lint.tasks.lint-prettier]
+description = "check prettier style"
 cmd = "pixi r prettier-"
 depends-on = ["setup-js"]
 inputs = [
@@ -65,6 +133,7 @@ inputs = [
 ]
 
 [feature.tasks-lint.tasks.fix-ruff]
+description = "fix python style"
 cmd = "ruff format && ruff check --fix-only"
 inputs = [
   "{tests,src/ipyprofiler}/**/*.py",
@@ -74,6 +143,7 @@ inputs = [
 ]
 
 [feature.tasks-lint.tasks.lint-ruff]
+description = "check python style"
 cmd = "ruff format --check && ruff check"
 inputs = [
   "{tests,src/ipyprofiler}/**/*.py",
@@ -83,6 +153,7 @@ inputs = [
 ]
 
 [feature.tasks-lint.tasks.fix-taplo]
+description = "fix toml style"
 cmd = """taplo fmt
   --option=array_auto_collapse=false
   --option=array_auto_expand=true
@@ -93,47 +164,98 @@ cmd = """taplo fmt
 outputs = ["*.toml"]
 
 [feature.tasks-lint.tasks.fix-nbstripout]
+description = "fix notebook style"
 cmd = """nbstripout --keep-id examples/files/*.ipynb"""
 inputs = ["examples/files/**/*.ipynb", "!.ipynb_checkpoints/"]
 
 [feature.tasks-lint.tasks.lint-actionlint]
+description = "check CI style"
 cmd = "actionlint -shellcheck=shellcheck -pyflakes=pyflakes"
 inputs = [".github/workflows"]
 
 # build ########################################################################
 [feature.tasks-build.tasks.build-js-lib]
-cmd = "jlpm tsc -b js --verbose"
-inputs = ["package.json", "js", "tsconfig*.json"]
+description = "build js from ts"
+cmd = "ls build/skip/tsc || jlpm tsc -b js --verbose"
+inputs = ["package.json", "js", "tsconfig*.json", "build/skip"]
 outputs = ["build/{root,src}.tsbuildinfo", "lib"]
 depends-on = ["setup-js"]
 
 [feature.tasks-build.tasks.build-js-ext]
-cmd = "jupyter labextension build"
-inputs = ["{lib,style}", "{package.json,webpack.config.js}"]
+description = "build the labextension"
+cmd = "ls build/skip/ext || jupyter labextension build"
+inputs = ["{lib,style}", "{package.json,webpack.config.js}", "build/skip"]
 outputs = ["src/_d/share"]
 depends-on = ["build-js-lib"]
 
 # test #########################################################################
 [feature.tasks-test.tasks.pip-test]
-cmd = "pixi r -e test pip-"
-inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/test.txt"]
-depends-on = ["build-js-ext"]
+description = "install a built package in the test environment"
+cmd = "pixi r -e test pip-whl-"
+inputs = ["pyproject.toml", "dist/*.whl"]
+outputs = ["build/pip-freeze-whl/test.txt"]
+depends-on = ["dist-py"]
 
 [feature.tasks-test.tasks.test-pytest]
-cmd = "pytest"
-inputs = ["pyproject.toml", "{src,tests}/**/*.py", "src/_d"]
-outputs = ["build/reports/{pytest.html,htmlcov/status.json}"]
-depends-on = ["pip-test", "build-js-ext"]
+description = "test the package with coverage"
+cmd = """
+pytest
+  -Werror
+  --html=build/reports/test/pytest.html
+  --self-contained-html
+  --cov-report=html:build/reports/test/htmlcov
+  --cov-report=term-missing:skip-covered
+  --cov=ipyprofiler
+  --cov-branch
+  --cov-context=test
+  --no-cov-on-fail
+  --cov-fail-under=100
+"""
+inputs = ["pyproject.toml", "tests/**/*.py", "dist/*.whl"]
+outputs = ["build/reports/test/{pytest.html,htmlcov/status.json}"]
+depends-on = ["pip-test"]
+
+# test-oldest ##################################################################
+[feature.tasks-test-oldest.tasks.pip-test-oldest]
+description = "install the built package in the oldest compatible environment"
+cmd = "pixi r -e test-oldest pip-whl-"
+inputs = ["dist/*.whl"]
+outputs = [
+  "build/pip-freeze-whl/test-oldest.txt",
+  ".pixi/envs/test-oldest/share/jupyter/labextensions/@deathbeds/jupyter-profiler/package.json",
+]
+depends-on = ["dist-py"]
+
+[feature.tasks-test-oldest.tasks.test-pytest-oldest]
+description = "test the package in the oldest compatible environment"
+cmd = """
+JUPYTER_PLATFORM_DIRS=1 pytest
+  --html=build/reports/test-oldest/pytest.html
+  --self-contained-html
+"""
+inputs = ["tests/**/*.py", "dist/*.whl", "pyproject.toml"]
+outputs = ["build/reports/test-oldest/pytest.html"]
+depends-on = ["pip-test-oldest", "dist-py"]
+
+[feature.tasks-test-oldest.tasks.lab-oldest]
+description = "start jupyterlab in the oldest compatible environment"
+cmd = "jupyter lab --no-browser --debug"
+depends-on = ["setup", "pip-test-oldest"]
 
 # dist #########################################################################
 [feature.tasks-build.tasks.dist-py]
-cmd = "pyproject-build . --no-isolation"
-inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d"]
+description = "build python distributions"
+cmd = """
+rm -rf build/pip-freeze-whl
+&& ls build/skip/whl
+|| pyproject-build . --no-isolation
+"""
+inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d", "build/skip"]
 outputs = ["dist/*.{whl,tar.gz}"]
 depends-on = ["build-js-ext"]
 
 [feature.tasks-build.tasks.dist-npm]
+description = "build npm distributions"
 cmd = "mkdir -p dist && cd dist && npm pack .."
 inputs = ["lib", "js", "style", "{.npmignore,README.md,LICENSE,package.json}"]
 outputs = ["dist/*.tgz"]
@@ -141,41 +263,49 @@ depends-on = ["build-js-lib"]
 
 # interactive ##################################################################
 [feature.tasks-lab.tasks.pip-lab]
-cmd = "pixi r -e lab pip-"
+description = "install an editable package in the interactive environment"
+cmd = "pixi r -e lab pip-e-"
 inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/lab.txt"]
+outputs = ["build/pip-freeze-e/lab.txt"]
 
 [feature.tasks-lab.tasks.lab]
+description = "start jupyterlab"
 cmd = "jupyter lab --no-browser --debug"
 depends-on = ["setup", "pip-lab"]
 
 [feature.tasks-lab.tasks.watch-lib]
+description = "watch ts source and rebuild js on change"
 cmd = "jlpm tsc -b js -w"
 depends-on = ["build-js-lib"]
 
 [feature.tasks-lab.tasks.watch-ext]
+description = "watch the js and rebuild the extension on change"
 cmd = "jupyter labextension watch"
 depends-on = ["build-js-ext"]
 
 # docs #########################################################################
 [feature.tasks-docs.tasks.pip-docs]
-cmd = "pixi r -e docs pip-"
-inputs = ["pyproject.toml"]
-outputs = ["build/pip-freeze/docs.txt"]
+description = "install a built package in the docs environment"
+cmd = "pixi r -e docs pip-whl-"
+inputs = ["dist/*.whl"]
+outputs = ["build/pip-freeze-whl/docs.txt"]
 
 [feature.tasks-docs.tasks.docs-lite]
+description = "build the lite site"
 cmd = "cd examples && jupyter-lite doit -- pre_archive:report:SHA256SUMS"
 depends-on = ["dist-py", "pip-docs"]
 inputs = ["dist", "examples/files", "examples/*.json"]
 outputs = ["build/docs-app/SHA256SUMS"]
 
 [feature.tasks-docs.tasks.docs-sphinx]
+description = "build the docs site"
 cmd = "sphinx-build -b html -W --keep-going docs build/docs"
 depends-on = ["docs-lite"]
 inputs = ["build/docs-app/SHA256SUMS", "*.toml", "docs"]
 outputs = ["build/docs/.buildinfo"]
 
 [feature.tasks-docs.tasks.docs-serve]
+description = "naively serve the docs"
 cmd = "cd build/docs && python -m http.server -b 127.0.0.1"
 depends-on = ["docs-sphinx"]
 
@@ -231,17 +361,27 @@ python = "https://docs.python.org/3"
 ipywidgets = ">=7,<9"
 pyinstrument = ">=4.4.0"
 
+[feature.deps-run-oldest.dependencies]
+ipywidgets = "7.*"
+jupyterlab = "4.0.*"
+pip = "*"
+pyinstrument = "4.4.0"
+python = "3.9.*"
+
 [feature.deps-lab.dependencies]
-jupyterlab = ">=4.2.2,<4.3"
+jupyterlab = ">=4.0.0,<4.3"
 
 [feature.deps-build.dependencies]
 flit-core = ">=3.9.0,<4"
 pip = "*"
-python = "3.12.*"
+python = ">=3.8,<3.13"
 python-build = "*"
 
 [feature.deps-node.dependencies]
 nodejs = "20.*"
+
+[feature.deps-lint.system-requirements]
+macos = "11.0"
 
 [feature.deps-lint.dependencies]
 ruff = "*"
@@ -278,10 +418,11 @@ lab = [
   "tasks-lab",
 ]
 test = ["deps-test", "deps-run", "deps-build", "tasks-test"]
+test-oldest = ["deps-test", "deps-run", "deps-run-oldest", "tasks-test-oldest"]
 
 # meta ########################################################################
 
 [project]
 name = "ipyprofiler"
-platforms = ["linux-64"]
+platforms = ["linux-64", "win-64", "osx-64", "osx-arm64"]
 channels = ["conda-forge"]
