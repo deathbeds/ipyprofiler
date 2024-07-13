@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, NoReturn
 import ipywidgets as W
 import traitlets as T
 
-from .constants import SPEEDSCOPE_SIMPLE_JSON, AsyncMode
+from .constants import SPEEDSCOPE_SIMPLE_JSON, AsyncMode, DOMClasses
 from .widget_callgraph import Callgraph
 from .widget_flamegraph import Flamegraph
 from .widget_profile import ProfileJSON
@@ -48,7 +48,7 @@ class Pyinstrument(W.Widget):
             titles=["🔥 flame graph", "📞 call graph"],
         )
         tab = W.Tab(**kwargs)
-        tab.add_class("jprf-Pyinstrument-Tab")
+        tab.add_class(DOMClasses.pyinstrument_tab.value)
         return tab
 
     @contextmanager

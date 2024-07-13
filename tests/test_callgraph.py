@@ -12,5 +12,4 @@ def test_callgraph_defaults() -> NoReturn:
     assert cg.profile.value
     cg.profile = ProfileJSON(value="{}")
     cg.profile = ProfileJSON(value="""{"foo": "bar"}""")
-    options = cg.show_options()
-    assert len(options.children) == 4
+    assert len(cg.options.children) == 4

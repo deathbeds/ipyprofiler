@@ -8,7 +8,7 @@ export const VERSION = PKG.version;
 import { Token } from '@lumino/coreutils';
 
 export interface IFlameGraph {
-  //
+  // nothing here yet.
 }
 
 export const IFlameGraph = new Token<IFlameGraph>(`${NAME}:plugin`);
