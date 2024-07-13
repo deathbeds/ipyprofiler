@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import pprint
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -37,7 +38,13 @@ def a_notebook_exporter() -> Generator[nbconvert.NotebookExporter, None, None]:
     }
     old_values = {os.environ[k]: v for k, v in env_patch.items() if k in os.environ}
     os.environ.update(env_patch)
+
+    from ipywidgets import __version__ as v_widgets
     from nbconvert import NotebookExporter
+    from nbconvert import __version__ as v_nbconvert
+
+    versions = {"nbconvert": v_nbconvert, "ipywidgets": v_widgets}
+    pprint.pprint({"versions": versions})
     from nbconvert.preprocessors import ExecutePreprocessor
 
     nbe = NotebookExporter()

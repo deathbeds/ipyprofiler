@@ -213,7 +213,14 @@ pytest
   --no-cov-on-fail
   --cov-fail-under=100
 """
-inputs = ["pyproject.toml", "tests/**/*.py", "dist/*.whl"]
+inputs = [
+  "build/pip-freeze-whl/test.txt",
+  "pyproject.toml",
+  "tests/**/*.py",
+  "dist/*.whl",
+  "examples/files",
+  "!**/.ipynb_checkpoints",
+]
 outputs = ["build/reports/test/{pytest.html,htmlcov/status.json}"]
 depends-on = ["pip-test"]
 
@@ -235,7 +242,14 @@ JUPYTER_PLATFORM_DIRS=1 pytest
   --html=build/reports/test-oldest/pytest.html
   --self-contained-html
 """
-inputs = ["tests/**/*.py", "dist/*.whl", "pyproject.toml"]
+inputs = [
+  "tests/**/*.py",
+  "dist/*.whl",
+  "pyproject.toml",
+  "examples/files",
+  "!**/.ipynb_checkpoints",
+  "build/pip-freeze-whl/test-oldest.txt",
+]
 outputs = ["build/reports/test-oldest/pytest.html"]
 depends-on = ["pip-test-oldest", "dist-py"]
 
@@ -346,7 +360,11 @@ autosectionlabel_prefix_document = true
 myst_heading_anchors = 3
 suppress_warnings = ["autosectionlabel.*"]
 templates_path = ["_templates"]
-html_static_path = ["../build/docs-app", "_static"]
+html_static_path = [
+  "../build/docs-app",
+  "../build/reports",
+  "_static",
+]
 html_theme = "pydata_sphinx_theme"
 html_css_files = ["theme.css"]
 release = "{{ ppt.project.version }}"
@@ -384,9 +402,11 @@ pyinstrument = ">=4.4.0"
 [feature.deps-run-oldest.dependencies]
 ipywidgets = "7.*"
 jupyterlab = "3.5.*"
+jupyter_server = "1.*"
 pip = "*"
 pyinstrument = "4.4.0"
 python = "3.8.*"
+nbconvert = "6.4.*"
 
 [feature.deps-lab.dependencies]
 jupyterlab = ">=4.0.0,<4.3"
@@ -416,7 +436,7 @@ actionlint-with-all = "*"
 pytest = ">=8,<9"
 pytest-cov = "*"
 pytest-html = "*"
-nbconvert = "*"
+nbconvert-core = "*"
 
 [feature.deps-docs.dependencies]
 ipywidgets = "*"
