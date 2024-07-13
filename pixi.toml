@@ -35,6 +35,8 @@ build = {description = "build ALL intermediate artifacts", depends-on = [
 dist = {description = "build ALL distribution artifacts", depends-on = [
   "dist-py",
   "dist-npm",
+  "dist-twine",
+  "dist-hash",
 ]}
 docs = {description = "build ALL docs", depends-on = ["docs-lite", "docs-sphinx"]}
 
@@ -261,6 +263,24 @@ inputs = ["lib", "js", "style", "{.npmignore,README.md,LICENSE,package.json}"]
 outputs = ["dist/*.tgz"]
 depends-on = ["build-js-lib"]
 
+[feature.tasks-build.tasks.dist-twine]
+description = "check python distribution"
+cmd = "twine check --strict dist/*.whl dist/*.tar.gz"
+inputs = ["dist/*.{whl,tar.gz}"]
+depends-on = ["dist-py"]
+
+[feature.tasks-build.tasks.dist-hash]
+description = "hash built assets"
+cmd = """
+cd dist
+&& sha256sum $(ls *.whl *.tar.gz *.tgz) > SHA256SUMS
+&& ls -shS1 *
+&& cat SHA256SUMS
+"""
+inputs = ["dist/*.{whl,tar.gz,tgz}"]
+outputs = ["dist/SHA256SUMS"]
+depends-on = ["dist-py", "dist-npm"]
+
 # interactive ##################################################################
 [feature.tasks-lab.tasks.pip-lab]
 description = "install an editable package in the interactive environment"
@@ -375,7 +395,10 @@ jupyterlab = ">=4.0.0,<4.3"
 flit-core = ">=3.9.0,<4"
 pip = "*"
 python = ">=3.8,<3.13"
+
+[feature.deps-dist.dependencies]
 python-build = "*"
+twine = "*"
 
 [feature.deps-node.dependencies]
 nodejs = "20.*"
@@ -405,7 +428,7 @@ python-libarchive-c = "*"
 # envs ########################################################################
 
 [environments]
-build = ["deps-build", "deps-lab", "deps-node", "deps-run", "tasks-build"]
+build = ["deps-build", "deps-dist", "deps-lab", "deps-node", "deps-run", "tasks-build"]
 lint = ["deps-lint", "deps-node", "deps-lab", "tasks-lint"]
 docs = ["deps-docs", "deps-lab", "deps-build", "tasks-docs"]
 lab = [
@@ -415,6 +438,7 @@ lab = [
   "deps-node",
   "deps-build",
   "deps-test",
+  "deps-dist",
   "tasks-lab",
 ]
 test = ["deps-test", "deps-run", "deps-build", "tasks-test"]
