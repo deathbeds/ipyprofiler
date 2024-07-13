@@ -1,5 +1,7 @@
 """Render a profile as directed graph."""
 
+from __future__ import annotations
+
 from typing import Any, Dict
 
 import ipywidgets as W

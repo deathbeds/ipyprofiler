@@ -1,5 +1,7 @@
 """Widget bases for ``ipyprofiler``."""
 
+from __future__ import annotations
+
 import ipywidgets as W
 import traitlets as T
 
