@@ -416,6 +416,7 @@ actionlint-with-all = "*"
 pytest = ">=8,<9"
 pytest-cov = "*"
 pytest-html = "*"
+nbconvert = "*"
 
 [feature.deps-docs.dependencies]
 ipywidgets = "*"
