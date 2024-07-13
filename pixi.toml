@@ -363,10 +363,10 @@ pyinstrument = ">=4.4.0"
 
 [feature.deps-run-oldest.dependencies]
 ipywidgets = "7.*"
-jupyterlab = "4.0.*"
+jupyterlab = "3.5.*"
 pip = "*"
 pyinstrument = "4.4.0"
-python = "3.9.*"
+python = "3.8.*"
 
 [feature.deps-lab.dependencies]
 jupyterlab = ">=4.0.0,<4.3"
