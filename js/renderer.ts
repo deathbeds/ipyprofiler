@@ -26,8 +26,9 @@ export class FlamegraphPanel extends IFrame {
     this._options = options;
     this.url = 'about:blank';
     setTimeout(() => {
-      if (this.url !== this.speedscopeUrl) {
-        this.url = this.speedscopeUrl;
+      const newUrl = this.speedscopeUrl;
+      if (this.url !== newUrl) {
+        this.url = newUrl;
       }
     }, 10);
   }

@@ -331,10 +331,19 @@ cmd = "pixi r -e docs pip-whl-"
 inputs = ["dist/*.whl"]
 outputs = ["build/pip-freeze-whl/docs.txt"]
 
+[feature.tasks-docs.tasks.docs-lite-samples]
+cmd = """python -c "
+from urllib.request import urlretrieve;
+urlretrieve('$URL/$NAME', 'examples/files/$NAME')
+"
+"""
+env = {URL = "https://github.com/jlfwong/speedscope/archive/refs/tags", NAME = "v1.20.0.tar.gz"}
+outputs = ["examples/files/v1.20.0.tar.gz"]
+
 [feature.tasks-docs.tasks.docs-lite]
 description = "build the lite site"
 cmd = "cd examples && jupyter-lite doit -- pre_archive:report:SHA256SUMS"
-depends-on = ["dist-py", "pip-docs"]
+depends-on = ["dist-py", "pip-docs", "docs-lite-samples"]
 inputs = ["dist", "examples/files", "examples/*.json"]
 outputs = ["build/docs-app/SHA256SUMS"]
 
