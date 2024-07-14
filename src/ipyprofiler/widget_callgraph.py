@@ -27,7 +27,6 @@ MERMAID_ESCAPE = {
 
 DEFAULT_MERMAID_TEMPLATE = """
 %%{init: {"flowchart": {{ mermaid_options | tojson }}} }%%
-
 flowchart {{ direction }}
 
 {% for node in nodes -%}
