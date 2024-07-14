@@ -79,7 +79,17 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"*.ipynb" = ["T201", "ANN201", "D103", "ANN001", "PLR2004", "ERA001", "PLE1142", "F811"]
+"*.ipynb" = [
+  "T201",
+  "ANN201",
+  "D103",
+  "ANN001",
+  "PLR2004",
+  "ERA001",
+  "PLE1142",
+  "F811",
+  "S310",
+]
 "tests/**/*.py" = ["S101", "SLF001", "PLR2004", "T201", "T203"]
 
 [tool.ruff.lint.isort]

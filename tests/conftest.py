@@ -17,11 +17,16 @@ if TYPE_CHECKING:
 HERE = Path(__file__).parent
 ROOT = HERE.parent
 EXAMPLES = ROOT / "examples/files"
-NOTEBOOKS = [
-    p.relative_to(EXAMPLES)
-    for p in EXAMPLES.rglob("*.ipynb")
-    if "ipynb_checkpoints" not in str(p)
-]
+TARBALL = sorted(EXAMPLES.glob("*.tar.gz"))
+NOTEBOOKS = (
+    []
+    if not TARBALL
+    else [
+        p.relative_to(EXAMPLES)
+        for p in EXAMPLES.rglob("*.ipynb")
+        if "ipynb_checkpoints" not in str(p)
+    ]
+)
 
 
 @pytest.fixture(params=[n.name for n in NOTEBOOKS])
