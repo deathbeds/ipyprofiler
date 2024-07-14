@@ -24,8 +24,9 @@ jobs:
         with:
           pixi-version: v0.25.0
           cache: true
-          environments: build docs
+          environments: build docs test test-oldest
       - run: pixi run dist
+      - run: pixi run test
       - run: pixi run docs-lite
       - run: pixi run docs
       - uses: actions/upload-pages-artifact@v3

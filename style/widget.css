@@ -7,11 +7,31 @@
   flex: 1;
 }
 
+.jp-OutputArea-output:has(.jprf-Pyinstrument-Tab) {
+  overflow-y: hidden;
+}
+
 .jprf-Pyinstrument-Tab {
+  margin: 0;
   max-height: 100vh;
   flex: 1;
+  overflow-y: hidden;
 }
 
 .jupyter-widgets.widget-tab.jprf-Pyinstrument-Tab > .widget-tab-contents {
   padding: 0;
+}
+
+.jprf-Callgraph-Options > .widget-inline-hbox {
+  --jp-widgets-inline-width: auto;
+  --jp-widgets-inline-label-width: auto;
+  padding: 0 0.5em;
+}
+
+.jprf-Callgraph-Options .widget-checkbox .widget-label {
+  display: none;
+}
+
+.jprf-Callgraph-Options .slider-container {
+  width: 20em;
 }

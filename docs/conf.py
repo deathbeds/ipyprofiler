@@ -17,6 +17,7 @@ HERE = CONF_PY.parent
 ROOT = HERE.parent
 PYPROJ = ROOT / "pyproject.toml"
 PIXI = ROOT / "pixi.toml"
+REPORTS = ROOT / "build/reports"
 
 if os.getenv(RTD) == "True":
     # provide a fake root doc
@@ -51,6 +52,7 @@ else:
     )
 
     intersphinx_mapping = {k: (v, None) for k, v in _intersphinx_mapping.items()}
+    REPORTS.mkdir(parents=True, exist_ok=True)
 
 
 # RTD will inject more config below here

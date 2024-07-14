@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import ipywidgets as W
 import jinja2
 import traitlets as T
 
-from .constants import SPEEDSCOPE_SIMPLE_JSON, MermaidDirection
+from .constants import SPEEDSCOPE_SIMPLE_JSON, DOMClasses, MermaidDirection
 from .widget_profile import ProfileJSON
 
 #: syntactically-meaningful characters to escape in mermaid labels
@@ -27,7 +27,6 @@ MERMAID_ESCAPE = {
 
 DEFAULT_MERMAID_TEMPLATE = """
 %%{init: {"flowchart": {{ mermaid_options | tojson }}} }%%
-
 flowchart {{ direction }}
 
 {% for node in nodes -%}
@@ -57,10 +56,12 @@ RENDER_ON_TRAITS = [*CHECKBOX_TRAITS, *SELECT_TRAITS, "template"]
 
 
 @W.register
-class Callgraph(W.Output):
+class Callgraph(W.VBox):
     """Display a call graph from a profile."""
 
     profile = T.Instance(ProfileJSON)
+    output = T.Instance(W.Output)
+    options = T.Instance("ipyprofiler.widget_callgraph.CallgraphOptions")
 
     show_time = T.Bool(default_value=False, help="whether to show times on edges").tag(
         sync=True
@@ -71,27 +72,16 @@ class Callgraph(W.Output):
     group_by_file = T.Bool(default_value=False).tag(sync=True)
     direction: MermaidDirection = T.UseEnum(MermaidDirection)
 
-    def show_options(self) -> W.HBox:
-        """Show widgets to control rendering options."""
-        children = []
-        for trait in CHECKBOX_TRAITS:
-            child = W.Checkbox(description=trait)
-            T.link((self, trait), (child, "value"))
-            children += [child]
-        for trait, enum in SELECT_TRAITS.items():
-            child = W.Select(
-                description=trait,
-                options=[(e.name, e) for e in enum],
-                rows=1,
-            )
-            T.link((self, trait), (child, "value"))
-            children += [child]
-        return W.HBox(children)
+    def __init__(self, **kwargs: Any):
+        """Create a new callgraph widget."""
+        super().__init__(**kwargs)
+        self.children = self._default_children()
+        self.add_class(DOMClasses.callgraph.value)
 
     @T.observe(*RENDER_ON_TRAITS)
     def render(self, *_change: T.Bunch) -> None:
         """Update the output."""
-        self.outputs = (
+        self.output.outputs = (
             {
                 "output_type": "display_data",
                 "data": {"text/vnd.mermaid": self._mermaid()},
@@ -147,6 +137,18 @@ class Callgraph(W.Output):
         self.profile.observe(self.render, "value")
         self.render()
 
+    @T.default("children")
+    def _default_children(self) -> List[W.Widget]:
+        return [self.options, self.output]
+
+    @T.default("options")
+    def _default_options(self) -> List[W.Widget]:
+        return CallgraphOptions(self)
+
+    @T.default("output")
+    def _default_output(self) -> W.Output:
+        return W.Output()
+
     @T.default("profile")
     def _default_profile(self) -> ProfileJSON:
         """Provide a default profile."""
@@ -156,3 +158,34 @@ class Callgraph(W.Output):
     def _default_template(self) -> str:
         """Provide a default template string."""
         return DEFAULT_MERMAID_TEMPLATE
+
+
+@W.register
+class CallgraphOptions(W.HBox):
+    """A minimal UI for callgraph diagram options."""
+
+    parent = T.Instance(Callgraph)
+
+    def __init__(self, parent: Callgraph, **kwargs: Any):
+        """Create a new UI for callgraph options."""
+        kwargs["parent"] = parent
+        super().__init__(**kwargs)
+        self.children = self._default_children()
+        self.add_class(DOMClasses.callgraph_options.value)
+
+    @T.default("children")
+    def _default_children(self) -> List[W.Widget]:
+        """Show widgets to control rendering options."""
+        children = []
+        for trait in CHECKBOX_TRAITS:
+            child = W.Checkbox(description=trait.replace("_", " "))
+            T.link((self.parent, trait), (child, "value"))
+            children += [child]
+        for trait, enum in SELECT_TRAITS.items():
+            child = W.SelectionSlider(
+                description=trait.replace("_", " "),
+                options=[(e.name.replace("_", " "), e) for e in enum],
+            )
+            T.link((self.parent, trait), (child, "value"))
+            children += [child]
+        return children

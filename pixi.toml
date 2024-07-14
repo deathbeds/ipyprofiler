@@ -204,6 +204,7 @@ cmd = """
 pytest
   -Werror
   --html=build/reports/test/pytest.html
+  --css=tests/theme.css
   --self-contained-html
   --cov-report=html:build/reports/test/htmlcov
   --cov-report=term-missing:skip-covered
@@ -213,7 +214,14 @@ pytest
   --no-cov-on-fail
   --cov-fail-under=100
 """
-inputs = ["pyproject.toml", "tests/**/*.py", "dist/*.whl"]
+inputs = [
+  "build/pip-freeze-whl/test.txt",
+  "pyproject.toml",
+  "tests/",
+  "dist/*.whl",
+  "examples/files",
+  "!**/.ipynb_checkpoints",
+]
 outputs = ["build/reports/test/{pytest.html,htmlcov/status.json}"]
 depends-on = ["pip-test"]
 
@@ -235,7 +243,14 @@ JUPYTER_PLATFORM_DIRS=1 pytest
   --html=build/reports/test-oldest/pytest.html
   --self-contained-html
 """
-inputs = ["tests/**/*.py", "dist/*.whl", "pyproject.toml"]
+inputs = [
+  "tests/",
+  "dist/*.whl",
+  "pyproject.toml",
+  "examples/files",
+  "!**/.ipynb_checkpoints",
+  "build/pip-freeze-whl/test-oldest.txt",
+]
 outputs = ["build/reports/test-oldest/pytest.html"]
 depends-on = ["pip-test-oldest", "dist-py"]
 
@@ -252,8 +267,14 @@ rm -rf build/pip-freeze-whl
 && ls build/skip/whl
 || pyproject-build . --no-isolation
 """
-inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d", "build/skip"]
-outputs = ["dist/*.{whl,tar.gz}"]
+inputs = [
+  "{pyproject.toml,LICENSE,README.md}",
+  "src/**/*.py",
+  "src/_d",
+  "build/skip",
+  "examples/files",
+]
+outputs = ["dist/*.{whl,tar.gz}", "!**/.ipynb_checkpoints"]
 depends-on = ["build-js-ext"]
 
 [feature.tasks-build.tasks.dist-npm]
@@ -346,7 +367,11 @@ autosectionlabel_prefix_document = true
 myst_heading_anchors = 3
 suppress_warnings = ["autosectionlabel.*"]
 templates_path = ["_templates"]
-html_static_path = ["../build/docs-app", "_static"]
+html_static_path = [
+  "../build/docs-app",
+  "../build/reports",
+  "_static",
+]
 html_theme = "pydata_sphinx_theme"
 html_css_files = ["theme.css"]
 release = "{{ ppt.project.version }}"
@@ -384,9 +409,11 @@ pyinstrument = ">=4.4.0"
 [feature.deps-run-oldest.dependencies]
 ipywidgets = "7.*"
 jupyterlab = "3.5.*"
+jupyter_server = "1.*"
 pip = "*"
 pyinstrument = "4.4.0"
 python = "3.8.*"
+nbconvert = "6.4.*"
 
 [feature.deps-lab.dependencies]
 jupyterlab = ">=4.0.0,<4.3"
@@ -416,6 +443,8 @@ actionlint-with-all = "*"
 pytest = ">=8,<9"
 pytest-cov = "*"
 pytest-html = "*"
+nbconvert-core = "*"
+ansi2html = "*"
 
 [feature.deps-docs.dependencies]
 ipywidgets = "*"

@@ -36,6 +36,14 @@ class MermaidDirection(Enum):
     left_to_right = "LR"
 
 
+class DOMClasses(Enum):
+    """Classes added to widgets from the python side."""
+
+    pyinstrument_tab = "jprf-Pyinstrument-Tab"
+    callgraph = "jprf-Callgraph"
+    callgraph_options = "jprf-Callgraph-Options"
+
+
 SPEEDSCOPE_SIMPLE_JSON = """
 {
   "$schema": "https://www.speedscope.app/file-format-schema.json",

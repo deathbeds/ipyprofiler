@@ -45,6 +45,10 @@ Source = "https://github.com/deathbeds/ipyprofiler/tree/main"
 [tool.flit.external-data]
 directory = "src/_d"
 
+[tool.flit.sdist]
+include = ["examples/files/**/*.ipynb"]
+exclude = ["examples/files/**/.ipynb_checkpoints/**"]
+
 # ruff #########################################################################
 [tool.ruff]
 cache-dir = "build/.cache/ruff"
@@ -76,7 +80,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "*.ipynb" = ["T201", "ANN201", "D103", "ANN001", "PLR2004", "ERA001", "PLE1142", "F811"]
-"tests/**/*.py" = ["S101", "SLF001", "PLR2004", "T201"]
+"tests/**/*.py" = ["S101", "SLF001", "PLR2004", "T201", "T203"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["ipyprofiler"]
@@ -93,6 +97,8 @@ filterwarnings = ["ignore::DeprecationWarning:traitlets.traitlets:"]
 # coverage #####################################################################
 [tool.coverage.run]
 data_file = "build/reports/test/.coverage"
+parallel = true
+branch = true
 
 [tool.coverage.html]
 show_contexts = true
