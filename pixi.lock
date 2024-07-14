@@ -1422,6 +1422,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-all-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-pyflakes-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-shellcheck-1.7.1-hd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ansi2html-1.9.2-py312h7900ff3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-21.2.0-py312h98912ed_4.conda
@@ -1619,6 +1620,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-all-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-pyflakes-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-shellcheck-1.7.1-hd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/ansi2html-1.9.2-py312hb401068_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/appnope-0.1.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
@@ -1805,6 +1807,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-all-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-pyflakes-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-shellcheck-1.7.1-hd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ansi2html-1.9.2-py312h81bd7bf_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/appnope-0.1.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
@@ -1991,6 +1994,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-all-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-pyflakes-1.7.1-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/actionlint-with-shellcheck-1.7.1-hd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/ansi2html-1.9.2-py312h2e8e312_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/argon2-cffi-bindings-21.2.0-py312he70551f_4.conda
@@ -2792,6 +2796,7 @@ environments:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ansi2html-1.9.2-py312h7900ff3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-23.2.0-pyh71513ae_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/beautifulsoup4-4.12.3-pyha770c72_0.conda
@@ -2890,6 +2895,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zeromq-4.3.5-h75354e8_4.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.19.2-pyhd8ed1ab_0.conda
       osx-64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/ansi2html-1.9.2-py312hb401068_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-23.2.0-pyh71513ae_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/beautifulsoup4-4.12.3-pyha770c72_0.conda
@@ -2981,6 +2987,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zeromq-4.3.5-hde137ed_4.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.19.2-pyhd8ed1ab_0.conda
       osx-arm64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ansi2html-1.9.2-py312h81bd7bf_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-23.2.0-pyh71513ae_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/beautifulsoup4-4.12.3-pyha770c72_0.conda
@@ -3072,6 +3079,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zeromq-4.3.5-hcc0f68c_4.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.19.2-pyhd8ed1ab_0.conda
       win-64:
+      - conda: https://conda.anaconda.org/conda-forge/win-64/ansi2html-1.9.2-py312h2e8e312_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-2.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-23.2.0-pyh71513ae_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/beautifulsoup4-4.12.3-pyha770c72_0.conda
@@ -3168,6 +3176,7 @@ environments:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ansi2html-1.9.2-py38h578d9bd_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-3.7.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/argon2-cffi-bindings-21.2.0-py38h01eb140_4.conda
@@ -3304,6 +3313,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.22.0-py38he8230f0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.6-ha6fb4c9_0.conda
       osx-64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/ansi2html-1.9.2-py38h50d1736_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-3.7.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/appnope-0.1.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
@@ -3436,6 +3446,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstandard-0.22.0-py38hdb7df32_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstd-1.5.6-h915ae27_0.conda
       osx-arm64:
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ansi2html-1.9.2-py38h10201cd_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-3.7.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/appnope-0.1.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
@@ -3566,6 +3577,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.22.0-py38h43bb1b3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
       win-64:
+      - conda: https://conda.anaconda.org/conda-forge/win-64/ansi2html-1.9.2-py38haa244fe_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-3.7.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-23.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/argon2-cffi-bindings-21.2.0-py38h91455d4_4.conda
@@ -3875,6 +3887,152 @@ packages:
   license_family: BSD
   size: 18365
   timestamp: 1704848898483
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py312h2e8e312_1
+  build_number: 1
+  subdir: win-64
+  url: https://conda.anaconda.org/conda-forge/win-64/ansi2html-1.9.2-py312h2e8e312_1.conda
+  sha256: 378ac04b109588fb48d4621f13fad41360fcfb77e2540464cbaaf125b47bf08f
+  md5: 9815e96122a23811e52d433d6cd38461
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 75123
+  timestamp: 1720600607057
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py312h7900ff3_1
+  build_number: 1
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/ansi2html-1.9.2-py312h7900ff3_1.conda
+  sha256: 3bc1c1c6689c9f122cc655f517f0a9ca57a8f85be2929ceeda3c8dd986c6d29f
+  md5: 230f7a2ff253cabf7dfc0a46e022ff2f
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 49920
+  timestamp: 1720600237764
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py312h81bd7bf_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/ansi2html-1.9.2-py312h81bd7bf_1.conda
+  sha256: ce7fc1cd863c921a0262c75ec25ad7f099eec4bf02614047fc25f5216b55b410
+  md5: 3465ba64fa98ea3076a819ca1ad2a452
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 50514
+  timestamp: 1720600412719
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py312hb401068_1
+  build_number: 1
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/ansi2html-1.9.2-py312hb401068_1.conda
+  sha256: 34c2b398de1dbe4ba710bf34e67bdb3e97f7d2815cc31b20ade10ab9a6f55e77
+  md5: 9ad6eda29be8f86628bd772dcf662e8f
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 49599
+  timestamp: 1720600439678
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py38h10201cd_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/ansi2html-1.9.2-py38h10201cd_1.conda
+  sha256: 0e7d15b60aef105584a25aa6dff05259a3cf27cd9ff35dc0e8b08e03e4ec9226
+  md5: 280c5452b74e44c6fa46683b74c97b9e
+  depends:
+  - python >=3.8,<3.9.0a0
+  - python >=3.8,<3.9.0a0 *_cpython
+  - python_abi 3.8.* *_cp38
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 43983
+  timestamp: 1720600438605
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py38h50d1736_1
+  build_number: 1
+  subdir: osx-64
+  url: https://conda.anaconda.org/conda-forge/osx-64/ansi2html-1.9.2-py38h50d1736_1.conda
+  sha256: 5a824539b57e9b8ce3642b56d1bcc355a8f69cca29bcdf48c8d2c2676fba0310
+  md5: a0c3e0f718db859712087bc48c95f64c
+  depends:
+  - python >=3.8,<3.9.0a0
+  - python_abi 3.8.* *_cp38
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 43296
+  timestamp: 1720600384521
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py38h578d9bd_1
+  build_number: 1
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/ansi2html-1.9.2-py38h578d9bd_1.conda
+  sha256: cca02c0b6fcdcdd818af99bff332d1ec1522a33ea3dba982a2347764fc4b0177
+  md5: c9291e1e5f2b890c7d1fc710af2f76cd
+  depends:
+  - python >=3.8,<3.9.0a0
+  - python_abi 3.8.* *_cp38
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 43282
+  timestamp: 1720600297924
+- kind: conda
+  name: ansi2html
+  version: 1.9.2
+  build: py38haa244fe_1
+  build_number: 1
+  subdir: win-64
+  url: https://conda.anaconda.org/conda-forge/win-64/ansi2html-1.9.2-py38haa244fe_1.conda
+  sha256: fd63ac6b8d48daf5c7ab05dcd1e378eeb44d7e9d90ceb477ddad8ded41eb8c34
+  md5: eb19e8c88d037f3625d3a14cb136f67c
+  depends:
+  - python >=3.8,<3.9.0a0
+  - python_abi 3.8.* *_cp38
+  - setuptools
+  - six
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  size: 68697
+  timestamp: 1720600710720
 - kind: conda
   name: anyio
   version: 3.7.1

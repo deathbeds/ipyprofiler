@@ -204,6 +204,7 @@ cmd = """
 pytest
   -Werror
   --html=build/reports/test/pytest.html
+  --css=tests/theme.css
   --self-contained-html
   --cov-report=html:build/reports/test/htmlcov
   --cov-report=term-missing:skip-covered
@@ -216,7 +217,7 @@ pytest
 inputs = [
   "build/pip-freeze-whl/test.txt",
   "pyproject.toml",
-  "tests/**/*.py",
+  "tests/",
   "dist/*.whl",
   "examples/files",
   "!**/.ipynb_checkpoints",
@@ -243,7 +244,7 @@ JUPYTER_PLATFORM_DIRS=1 pytest
   --self-contained-html
 """
 inputs = [
-  "tests/**/*.py",
+  "tests/",
   "dist/*.whl",
   "pyproject.toml",
   "examples/files",
@@ -266,8 +267,14 @@ rm -rf build/pip-freeze-whl
 && ls build/skip/whl
 || pyproject-build . --no-isolation
 """
-inputs = ["{pyproject.toml,LICENSE,README.md}", "src/**/*.py", "src/_d", "build/skip"]
-outputs = ["dist/*.{whl,tar.gz}"]
+inputs = [
+  "{pyproject.toml,LICENSE,README.md}",
+  "src/**/*.py",
+  "src/_d",
+  "build/skip",
+  "examples/files",
+]
+outputs = ["dist/*.{whl,tar.gz}", "!**/.ipynb_checkpoints"]
 depends-on = ["build-js-ext"]
 
 [feature.tasks-build.tasks.dist-npm]
@@ -437,6 +444,7 @@ pytest = ">=8,<9"
 pytest-cov = "*"
 pytest-html = "*"
 nbconvert-core = "*"
+ansi2html = "*"
 
 [feature.deps-docs.dependencies]
 ipywidgets = "*"

@@ -45,6 +45,10 @@ Source = "https://github.com/deathbeds/ipyprofiler/tree/main"
 [tool.flit.external-data]
 directory = "src/_d"
 
+[tool.flit.sdist]
+include = ["examples/files/**/*.ipynb"]
+exclude = ["examples/files/**/.ipynb_checkpoints/**"]
+
 # ruff #########################################################################
 [tool.ruff]
 cache-dir = "build/.cache/ruff"
@@ -93,6 +97,8 @@ filterwarnings = ["ignore::DeprecationWarning:traitlets.traitlets:"]
 # coverage #####################################################################
 [tool.coverage.run]
 data_file = "build/reports/test/.coverage"
+parallel = true
+branch = true
 
 [tool.coverage.html]
 show_contexts = true

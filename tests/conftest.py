@@ -52,3 +52,8 @@ def a_notebook_exporter() -> Generator[nbconvert.NotebookExporter, None, None]:
     yield nbe
     [os.environ.pop(k) for k in env_patch]
     os.environ.update(old_values)
+
+
+def pytest_html_duration_format(duration: float) -> str:
+    """Format durations in ms HTML reports."""
+    return f"""{int(duration * 1000)} ms"""
