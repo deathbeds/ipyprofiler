@@ -437,7 +437,7 @@ python-build = "*"
 twine = "*"
 
 [feature.deps-node.dependencies]
-nodejs = "20.*"
+nodejs = "22.*"
 
 [feature.deps-lint.system-requirements]
 macos = "11.0"
@@ -470,13 +470,13 @@ build = ["deps-build", "deps-dist", "deps-lab", "deps-node", "deps-run", "tasks-
 lint = ["deps-lint", "deps-node", "deps-lab", "tasks-lint"]
 docs = ["deps-docs", "deps-lab", "deps-build", "tasks-docs"]
 lab = [
+  "deps-build",
+  "deps-dist",
   "deps-lab",
   "deps-lint",
-  "deps-run",
   "deps-node",
-  "deps-build",
+  "deps-run",
   "deps-test",
-  "deps-dist",
   "tasks-lab",
 ]
 test = ["deps-test", "deps-run", "deps-build", "tasks-test"]
