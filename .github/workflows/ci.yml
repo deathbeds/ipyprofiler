@@ -26,6 +26,7 @@ jobs:
           pixi-version: v0.27.0
           cache: true
           environments: build
+          cache-key: job-build
       - name: cache (node)
         uses: actions/cache@v4
         id: cache-node-modules
@@ -54,6 +55,7 @@ jobs:
           pixi-version: v0.27.0
           cache: true
           environments: build lint
+          cache-key: job-lint
       - name: cache (node)
         uses: actions/cache@v4
         id: cache-node-modules
@@ -86,6 +88,7 @@ jobs:
           pixi-version: v0.27.0
           cache: true
           environments: build ${{ matrix.test-env }}
+          cache-key: job-test-${{ matrix.test-env }}
       - uses: actions/download-artifact@v4
         with:
           name: ipfr-${{ github.run_number }}-dist
@@ -108,6 +111,7 @@ jobs:
           pixi-version: v0.27.0
           cache: true
           environments: build docs
+          cache-key: job-docs
       - uses: actions/download-artifact@v4
         with:
           name: ipfr-${{ github.run_number }}-dist
