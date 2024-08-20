@@ -1,4 +1,4 @@
-"$schema" = "https://pixi.sh/v0.25.0/schema/manifest/schema.json"
+"$schema" = "https://pixi.sh/v0.27.0/schema/manifest/schema.json"
 
 [tasks]
 dev = {description = "run ALL tasks", depends-on = [
