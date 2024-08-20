@@ -11,6 +11,8 @@ import traitlets as T
 from .constants import SPEEDSCOPE_SIMPLE_JSON, DOMClasses, MermaidDirection
 from .widget_profile import ProfileJSON
 
+CSS_COLLAPSED = "jprf-Callgraph-Options-expanded"
+
 #: syntactically-meaningful characters to escape in mermaid labels
 MERMAID_ESCAPE = {
     "[": 91,
@@ -25,52 +27,111 @@ MERMAID_ESCAPE = {
     "\\": 92,
 }
 
-DEFAULT_MERMAID_TEMPLATE = """
-%%{init: {"flowchart": {{ mermaid_options | tojson }}} }%%
+DEFAULT_MERMAID_TEMPLATE = """%%{init: {"flowchart": {{ mermaid_options | tojson }}} }%%
 flowchart {{ direction }}
+
+{% set global_indexes = [] %}
+{% set edge_styles = {} %}
+
+{% macro draw_edge(edge, i) -%}
+    {%- set _ = global_indexes.append(global_indexes.__len__()) -%}
+    {%- set indexes = [global_indexes[-1]] -%}
+    {%- set hide = i < first_edge or (last_edge != -1 and i > last_edge) -%}
+    {%- set edge_style = ["-->", "~~~"][hide] -%}
+    {{ edge.source }} {{ edge_style }}
+    {%- if show_time -%}
+        {{ edge.id }}>
+            {%- if time_precision == -1 -%}
+            {{ edge.time }}
+            {%- else -%}
+            {{ edge.time | round(time_precision) }}
+            {%- endif -%}
+        ] {{ edge_style }}
+        {%- set _ = global_indexes.append(global_indexes.__len__()) -%}
+        {%- set indexes = [global_indexes[-2], global_indexes[-1]] -%}
+    {%- endif %} {{ edge.target }}
+
+    {%- if first_edge != -1 and first_edge == i %}
+    {% set _ = edge_styles.__setitem__("stroke:blue;", indexes) %}
+    {%- endif %}
+    {%- if last_edge != -1 and last_edge == i %}
+    {% set _ = edge_styles.__setitem__("stroke:red;", indexes) %}
+    {%- endif %}
+{% endmacro %}
+
+{% macro add_edge_style(indexes, style) -%}
+    linkStyle {{ indexes | join(",") }} {{ style }}
+{%- endmacro %}
 
 {% for node in nodes -%}
     {{ node.id }}([{{ escape_mmd(node.name) }}])
 {% endfor -%}
 
+{% if group_by_file %}
+    {% for group in groups %}
+    subgraph {{ group.id }} [{{ escape_mmd(group.file or "???") }}]
+        {% for node_id in group.nodes %}
+        {{ node_id }}
+        {% endfor -%}
+    end
+    {% endfor %}
+{% endif %}
+
 {%- for edge in edges %}
-{{ edge.source }} -->
-{%- if show_time %} {{ edge.id }}>{{ edge.time }}] --> {% endif -%}
-{{ edge.target }}
+    {{ draw_edge(edge, loop.index) }}
 {%- endfor -%}
 
-{% if group_by_file %}
-{% for group in groups %}
-subgraph {{ group.id }} [{{ escape_mmd(group.file or "???") }}]
-    {% for node_id in group.nodes %}
-    {{ node_id }}
-    {% endfor -%}
-end
+{% for style, indexes in edge_styles.items() %}
+    {{ add_edge_style(indexes, style) }}
 {% endfor %}
-{% endif %}
 """
 
 CHECKBOX_TRAITS = ["show_time", "group_by_file", "use_elk"]
 SELECT_TRAITS = {"direction": MermaidDirection}
-RENDER_ON_TRAITS = [*CHECKBOX_TRAITS, *SELECT_TRAITS, "template"]
+SLIDER_TRAITS = ["first_edge", "last_edge", "time_precision"]
+OPTION_GROUPS = {
+    "Layout": ["direction", "use_elk"],
+    "Content": ["show_time", "group_by_file", "time_precision"],
+    "Playback": ["first_edge", "last_edge"],
+}
+
+RENDER_ON_TRAITS = [*CHECKBOX_TRAITS, *SELECT_TRAITS, *SLIDER_TRAITS, "template"]
+
+
+def no_elk(widgets: dict[str, W.Widget]) -> bool:
+    """Handle widget that don't work with elk."""
+    return bool(widgets["use_elk"].value)
+
+
+TRAIT_DISABLED_IF = {
+    "first_edge": no_elk,
+    "last_edge": no_elk,
+}
 
 
 @W.register
-class Callgraph(W.VBox):
+class Callgraph(W.HBox):
     """Display a call graph from a profile."""
 
-    profile = T.Instance(ProfileJSON)
-    output = T.Instance(W.Output)
-    options = T.Instance("ipyprofiler.widget_callgraph.CallgraphOptions")
-
-    show_time = T.Bool(default_value=False, help="whether to show times on edges").tag(
-        sync=True
+    profile: ProfileJSON = T.Instance(ProfileJSON)
+    output: W.Output = T.Instance(W.Output)
+    options: CallgraphOptions = T.Instance(
+        "ipyprofiler.widget_callgraph.CallgraphOptions"
     )
-    template = T.Unicode().tag(sync=True)
-    mermaid_options = T.Dict().tag(sync=True)
-    use_elk = T.Bool(default_value=False).tag(sync=True)
-    group_by_file = T.Bool(default_value=False).tag(sync=True)
+
+    show_options = T.Bool(default_value=False).tag(sync=True)
+
+    show_time: bool = T.Bool(
+        default_value=False, help="whether to show times on edges"
+    ).tag(sync=True)
+    time_precision: int = T.Int(min=-1, max=10).tag(sync=True)
+    template: str = T.Unicode().tag(sync=True)
+    mermaid_options: dict[str, Any] = T.Dict().tag(sync=True)
+    use_elk: bool = T.Bool(default_value=False).tag(sync=True)
+    group_by_file: bool = T.Bool(default_value=False).tag(sync=True)
     direction: MermaidDirection = T.UseEnum(MermaidDirection)
+    first_edge: int = T.Int(-1).tag(sync=True)
+    last_edge: int = T.Int(-1).tag(sync=True)
 
     def __init__(self, **kwargs: Any):
         """Create a new callgraph widget."""
@@ -100,8 +161,11 @@ class Callgraph(W.VBox):
         context = {
             **self.profile.to_callgraph(),
             "show_time": self.show_time,
+            "time_precision": self.time_precision,
             "group_by_file": self.group_by_file,
             "direction": self.direction.value,
+            "first_edge": self.first_edge,
+            "last_edge": self.last_edge,
         }
         self._add_mermaid_options(context)
         self._add_mermaid_escape(context)
@@ -139,14 +203,24 @@ class Callgraph(W.VBox):
 
     @T.default("children")
     def _default_children(self) -> List[W.Widget]:
-        return [self.options, self.output]
+        """Provide (and link) the default children."""
+        expand = W.ToggleButton(icon="bars", tooltip="hide/show options")
+
+        children = [self.output, self.options, expand]
+
+        T.link((self, "show_options"), (expand, "value"))
+        T.link((self, "show_options"), (self.options, "expanded"))
+
+        return children
 
     @T.default("options")
     def _default_options(self) -> List[W.Widget]:
+        """Provide a default options widget."""
         return CallgraphOptions(self)
 
     @T.default("output")
     def _default_output(self) -> W.Output:
+        """Provide a default output widget."""
         return W.Output()
 
     @T.default("profile")
@@ -161,10 +235,11 @@ class Callgraph(W.VBox):
 
 
 @W.register
-class CallgraphOptions(W.HBox):
+class CallgraphOptions(W.VBox):
     """A minimal UI for callgraph diagram options."""
 
     parent = T.Instance(Callgraph)
+    expanded = T.Bool(default_value=True).tag(sync=True)
 
     def __init__(self, parent: Callgraph, **kwargs: Any):
         """Create a new UI for callgraph options."""
@@ -173,19 +248,49 @@ class CallgraphOptions(W.HBox):
         self.children = self._default_children()
         self.add_class(DOMClasses.callgraph_options.value)
 
+    @T.observe("expanded")
+    def _on_expanded(self, *_change: Any) -> None:
+        self.layout.display = "block" if self.expanded else "none"
+
     @T.default("children")
     def _default_children(self) -> List[W.Widget]:
         """Show widgets to control rendering options."""
-        children = []
-        for trait in CHECKBOX_TRAITS:
-            child = W.Checkbox(description=trait.replace("_", " "))
-            T.link((self.parent, trait), (child, "value"))
-            children += [child]
-        for trait, enum in SELECT_TRAITS.items():
-            child = W.SelectionSlider(
-                description=trait.replace("_", " "),
-                options=[(e.name.replace("_", " "), e) for e in enum],
-            )
-            T.link((self.parent, trait), (child, "value"))
-            children += [child]
-        return children
+        groups = []
+        widgets_by_name = {}
+        for group_name, traits in OPTION_GROUPS.items():
+            children = []
+            child = None
+            for trait in traits:
+                if trait in CHECKBOX_TRAITS:
+                    child = W.Checkbox(description=trait.replace("_", " "))
+                    T.link((self.parent, trait), (child, "value"))
+                    children += [child]
+                elif trait in SELECT_TRAITS:
+                    child = W.SelectionSlider(
+                        description=trait.replace("_", " "),
+                        options=[
+                            (e.name.replace("_", " "), e) for e in SELECT_TRAITS[trait]
+                        ],
+                    )
+                    T.link((self.parent, trait), (child, "value"))
+                    children += [child]
+                elif trait in SLIDER_TRAITS:
+                    child = W.IntSlider(
+                        description=trait.replace("_", " "), min=-1, max=10000
+                    )
+                    T.link((self.parent, trait), (child, "value"))
+                    children += [child]
+                else:  # pragma: no cover
+                    continue
+                widgets_by_name[trait] = child
+            group = W.VBox([W.Label(group_name), *children])
+            groups.append(group)
+
+        def _on_change(*_change: Any) -> None:
+            for name, disable_fn in TRAIT_DISABLED_IF.items():
+                widget = widgets_by_name[name]
+                widget.disabled = disable_fn(widgets_by_name)
+
+        self.parent.observe(_on_change)
+
+        return groups

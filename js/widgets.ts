@@ -1,11 +1,11 @@
 import { BoxModel, BoxView } from '@jupyter-widgets/controls';
 import { FlamegraphPanel } from './renderer';
-import { NAME, VERSION, STYLE, WIDGET_DEFAULTS } from './tokens';
+import { NAME, STYLE, VERSION, WIDGET_DEFAULTS } from './tokens';
 
 import {
+  unpack_models as deserialize,
   DOMWidgetModel,
   DOMWidgetView,
-  unpack_models as deserialize,
 } from '@jupyter-widgets/base';
 
 export class ProfileJSONModel extends DOMWidgetModel {

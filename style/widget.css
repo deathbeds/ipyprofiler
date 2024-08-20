@@ -22,16 +22,39 @@
   padding: 0;
 }
 
-.jprf-Callgraph-Options > .widget-inline-hbox {
-  --jp-widgets-inline-width: auto;
-  --jp-widgets-inline-label-width: auto;
+.jprf-Callgraph {
+  height: 100%;
+}
+
+.jprf-Callgraph,
+.jprf-Callgraph .widget-output {
+  flex: 1;
+}
+
+.jprf-Callgraph-Options {
+  border-left: var(--jp-border-width) solid var(--jp-border-color1);
+  overflow-y: auto;
+  min-width: 25em;
+}
+
+.jprf-Callgraph-Options > .widget-vbox > .widget-label {
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  border-left: 0;
+  border-right: 0;
   padding: 0 0.5em;
+  height: unset;
+  margin: 0;
 }
 
-.jprf-Callgraph-Options .widget-checkbox .widget-label {
-  display: none;
+.jprf-Callgraph-Options > .widget-vbox:first-child > .widget-label {
+  border-top: 0;
 }
 
-.jprf-Callgraph-Options .slider-container {
-  width: 20em;
+.jprf-Callgraph .widget-toggle-button {
+  position: absolute;
+  max-width: 2.5em;
+  min-width: 2.5em;
+  flex: 0;
+  right: 0;
+  text-overflow: unset;
 }

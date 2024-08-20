@@ -1,4 +1,4 @@
-"$schema" = "https://pixi.sh/v0.25.0/schema/manifest/schema.json"
+"$schema" = "https://pixi.sh/v0.27.0/schema/manifest/schema.json"
 
 [tasks]
 dev = {description = "run ALL tasks", depends-on = [
@@ -15,13 +15,20 @@ setup = {description = "perform ALL setup", depends-on = [
 ]}
 fix = {description = "fix ALL style", depends-on = [
   "fix-taplo",
+  "fix-yarn-dupes",
+  "fix-package-json",
   "fix-prettier",
+  "fix-stylelint",
+  "fix-eslint",
   "fix-nbstripout",
   "fix-ruff",
 ]}
 lint = {description = "check ALL style", depends-on = [
+  "lint-package-json",
   "lint-prettier",
+  "lint-stylelint",
   "lint-ruff",
+  "lint-eslint",
   "lint-actionlint",
 ]}
 test = {description = "run ALL tests", depends-on = [
@@ -108,7 +115,7 @@ inputs = ["{package.json,yarn.lock,.yarnrc.yml}"]
 depends-on = ["setup-js", "pip-build", "build-js-ext"]
 
 # lint/fix #####################################################################
-[tasks.prettier-]
+[feature.tasks-lint.tasks.prettier--]
 description = "run prettier"
 cmd = """
 jlpm prettier
@@ -120,19 +127,69 @@ jlpm prettier
 
 [feature.tasks-lint.tasks.fix-prettier]
 description = "run prettier and write changes"
-cmd = "pixi r prettier- --write"
+cmd = "pixi r prettier-- --write"
 depends-on = ["setup-js"]
 inputs = ["*.{md,json,yml,js}", "{js,style,docs,.github}", "!.ipynb_checkpoints"]
 
 [feature.tasks-lint.tasks.lint-prettier]
 description = "check prettier style"
-cmd = "pixi r prettier-"
+cmd = "pixi r prettier--"
 depends-on = ["setup-js"]
 inputs = [
   "*.{md,json,yml,js}",
   "{js,style,docs,.github}",
   "!.ipynb_checkpoints/",
 ]
+
+[feature.tasks-lint.tasks.eslint--]
+cmd = """
+jlpm eslint --ext .js,.jsx,.ts,.tsx --cache --cache-location build/.cache/eslint js/ webpack.config.js
+"""
+
+[feature.tasks-lint.tasks.fix-yarn-dupes]
+description = "fix duplicates in yarn.lock"
+cmd = "jlpm yarn-berry-deduplicate --fail --strategy=fewer"
+depends-on = ["setup-js"]
+inputs = ["package.json"]
+
+[feature.tasks-lint.tasks.fix-eslint]
+cmd = """pixi r eslint-- --fix"""
+depends-on = ["setup-js"]
+inputs = ["package.json", "js/**/*.ts", "webpack.config.js", "tsconfig*.json"]
+
+[feature.tasks-lint.tasks.lint-eslint]
+cmd = """pixi r eslint--"""
+depends-on = ["setup-js"]
+inputs = ["package.json", "js/**/*.ts", "webpack.config.js", "tsconfig*.json"]
+
+[feature.tasks-lint.tasks.fix-package-json]
+description = "fix package.json"
+cmd = "jlpm prettier-package-json --write"
+depends-on = ["setup-js"]
+inputs = ["package.json"]
+
+[feature.tasks-lint.tasks.lint-package-json]
+description = "check package.json"
+cmd = """
+jlpm prettier-package-json --list-different
+"""
+depends-on = ["setup-js"]
+inputs = ["package.json"]
+
+[feature.tasks-lint.tasks.stylelint--]
+cmd = """
+jlpm stylelint --cache-location build/.cache/stylelint --cache "{style,docs}/**/*.css"
+"""
+
+[feature.tasks-lint.tasks.fix-stylelint]
+cmd = "pixi r stylelint-- --fix"
+inputs = ["package.json", "{style,docs}/**/*.css"]
+depends-on = ["setup-js", "fix-prettier"]
+
+[feature.tasks-lint.tasks.lint-stylelint]
+cmd = "pixi r stylelint--"
+inputs = ["package.json", "{style,docs}/**/*.css"]
+depends-on = ["setup-js"]
 
 [feature.tasks-lint.tasks.fix-ruff]
 description = "fix python style"
@@ -437,7 +494,7 @@ python-build = "*"
 twine = "*"
 
 [feature.deps-node.dependencies]
-nodejs = "20.*"
+nodejs = "22.*"
 
 [feature.deps-lint.system-requirements]
 macos = "11.0"
@@ -470,13 +527,13 @@ build = ["deps-build", "deps-dist", "deps-lab", "deps-node", "deps-run", "tasks-
 lint = ["deps-lint", "deps-node", "deps-lab", "tasks-lint"]
 docs = ["deps-docs", "deps-lab", "deps-build", "tasks-docs"]
 lab = [
+  "deps-build",
+  "deps-dist",
   "deps-lab",
   "deps-lint",
-  "deps-run",
   "deps-node",
-  "deps-build",
+  "deps-run",
   "deps-test",
-  "deps-dist",
   "tasks-lab",
 ]
 test = ["deps-test", "deps-run", "deps-build", "tasks-test"]
