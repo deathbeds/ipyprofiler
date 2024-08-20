@@ -1,5 +1,5 @@
 import { IFrame } from '@jupyterlab/apputils';
-import { URLExt, PageConfig } from '@jupyterlab/coreutils';
+import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 import { IFlameGraph, SPEEDSCOPE_HTML_URL, STYLE } from './tokens';
 
 const LABEXT_URL = PageConfig.getOption('fullLabextensionsUrl');

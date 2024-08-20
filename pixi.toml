@@ -18,6 +18,7 @@ fix = {description = "fix ALL style", depends-on = [
   "fix-package-json",
   "fix-prettier",
   "fix-stylelint",
+  "fix-eslint",
   "fix-nbstripout",
   "fix-ruff",
 ]}
@@ -26,6 +27,7 @@ lint = {description = "check ALL style", depends-on = [
   "lint-prettier",
   "lint-stylelint",
   "lint-ruff",
+  "lint-eslint",
   "lint-actionlint",
 ]}
 test = {description = "run ALL tests", depends-on = [
@@ -116,7 +118,7 @@ inputs = ["{package.json,yarn.lock,.yarnrc.yml}"]
 depends-on = ["setup-js", "pip-build", "build-js-ext"]
 
 # lint/fix #####################################################################
-[tasks.prettier-]
+[feature.tasks-lint.tasks.prettier--]
 description = "run prettier"
 cmd = """
 jlpm prettier
@@ -128,19 +130,34 @@ jlpm prettier
 
 [feature.tasks-lint.tasks.fix-prettier]
 description = "run prettier and write changes"
-cmd = "pixi r prettier- --write"
+cmd = "pixi r prettier-- --write"
 depends-on = ["setup-js"]
 inputs = ["*.{md,json,yml,js}", "{js,style,docs,.github}", "!.ipynb_checkpoints"]
 
 [feature.tasks-lint.tasks.lint-prettier]
 description = "check prettier style"
-cmd = "pixi r prettier-"
+cmd = "pixi r prettier--"
 depends-on = ["setup-js"]
 inputs = [
   "*.{md,json,yml,js}",
   "{js,style,docs,.github}",
   "!.ipynb_checkpoints/",
 ]
+
+[feature.tasks-lint.tasks.eslint--]
+cmd = """
+jlpm eslint --ext .js,.jsx,.ts,.tsx --cache --cache-location build/.cache/eslint js/ webpack.config.js
+"""
+
+[feature.tasks-lint.tasks.fix-eslint]
+cmd = """pixi r eslint-- --fix"""
+depends-on = ["setup-js"]
+inputs = ["package.json", "js/**/*.ts", "webpack.config.js", "tsconfig*.json"]
+
+[feature.tasks-lint.tasks.lint-eslint]
+cmd = """pixi r eslint--"""
+depends-on = ["setup-js"]
+inputs = ["package.json", "js/**/*.ts", "webpack.config.js", "tsconfig*.json"]
 
 [feature.tasks-lint.tasks.fix-package-json]
 description = "fix package.json"
@@ -149,7 +166,7 @@ depends-on = ["setup-js"]
 inputs = ["package.json"]
 
 [feature.tasks-lint.tasks.lint-package-json]
-description = "fix package.json"
+description = "check package.json"
 cmd = """
 jlpm prettier-package-json --list-different
 || echo '!!! run pixi r fix-package-json'
