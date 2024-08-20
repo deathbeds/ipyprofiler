@@ -1,10 +1,15 @@
 {
   "name": "@deathbeds/jupyter-profiler",
   "version": "0.1.0",
+  "main": "lib/index.js",
   "files": [
     "{LICENSE,README.md,*.js}",
     "{lib,style,js}/**/*.{json,js,css,d.ts}"
   ],
+  "sideEffects": [
+    "style/*.css"
+  ],
+  "types": "lib/index.d.ts",
   "dependencies": {
     "@jupyter-widgets/base": "6.*",
     "@jupyter-widgets/controls": "5.*",
@@ -12,25 +17,23 @@
     "@jupyterlab/application": "4.*",
     "speedscope": "1.20.0"
   },
-  "sideEffects": [
-    "style/*.css"
-  ],
   "devDependencies": {
     "@jupyterlab/builder": "4.*",
     "copy-webpack-plugin": "^12.0.2",
     "prettier": "^3.3.2",
+    "prettier-package-json": "^2.8.0",
     "prettier-plugin-sort-imports": "^1.8.5",
     "prettier-plugin-sort-json": "^4.0.0",
     "source-map-loader": "^5.0.0",
-    "typescript": "~5.4.5"
+    "stylelint": "^15.10.1",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-recommended": "^13.0.0",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-csstree-validator": "^3.0.0",
+    "stylelint-prettier": "^4.0.0",
+    "typescript": "~5.4.5",
+    "yarn-berry-deduplicate": "^6.1.1"
   },
-  "prettier": {
-    "singleQuote": true,
-    "printWidth": 88,
-    "proseWrap": "always"
-  },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "jupyterlab": {
     "extension": "lib/plugin.js",
     "outputDir": "src/_d/share/jupyter/labextensions/@deathbeds/jupyter-profiler",
@@ -44,6 +47,52 @@
         "bundled": false,
         "singleton": true
       }
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 88,
+    "proseWrap": "always"
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-recommended",
+      "stylelint-config-standard",
+      "stylelint-prettier/recommended"
+    ],
+    "plugins": [
+      "stylelint-csstree-validator"
+    ],
+    "rules": {
+      "import-notation": null,
+      "no-descending-specificity": null,
+      "comment-whitespace-inside": null,
+      "property-no-vendor-prefix": null,
+      "selector-no-vendor-prefix": null,
+      "value-no-vendor-prefix": null,
+      "alpha-value-notation": null,
+      "color-function-notation": null,
+      "custom-property-pattern": null,
+      "declaration-block-no-redundant-longhand-properties": null,
+      "function-linear-gradient-no-nonstandard-direction": null,
+      "function-url-quotes": null,
+      "keyframes-name-pattern": null,
+      "number-max-precision": null,
+      "selector-class-pattern": null,
+      "selector-id-pattern": null,
+      "selector-pseudo-class-no-unknown": null,
+      "selector-pseudo-element-no-unknown": null,
+      "selector-not-notation": null,
+      "selector-max-type": [
+        1,
+        {
+          "ignore": "compounded"
+        }
+      ],
+      "selector-max-class": 4,
+      "selector-max-compound-selectors": 4,
+      "selector-max-universal": 1,
+      "csstree/validator": true
     }
   }
 }
