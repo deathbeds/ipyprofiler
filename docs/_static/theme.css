@@ -11,8 +11,8 @@
   max-width: 100%;
 }
 
+/* stylelint-disable-next-line selector-max-type */
 .bd-article section p {
-  /* stylelint-disable-line selector-max-type */
   max-width: 45em;
 }
 

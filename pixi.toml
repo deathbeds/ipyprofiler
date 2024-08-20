@@ -15,6 +15,7 @@ setup = {description = "perform ALL setup", depends-on = [
 ]}
 fix = {description = "fix ALL style", depends-on = [
   "fix-taplo",
+  "fix-yarn-dupes",
   "fix-package-json",
   "fix-prettier",
   "fix-stylelint",
@@ -101,11 +102,7 @@ outputs = ["build/pip-freeze-e/build.txt"]
 
 [feature.tasks-build.tasks.setup-js]
 description = "set up nodejs environment"
-cmd = """
-ls build/skip/jlpm
-|| jlpm
-&& jlpm yarn-berry-deduplicate --fail --strategy=fewer
-"""
+cmd = "ls build/skip/jlpm || jlpm"
 inputs = ["package.json", "yarn.lock", ".yarnrc.yml", "build/skip"]
 outputs = ["yarn.lock", "node_modules/.yarn-state.yml"]
 
@@ -149,6 +146,12 @@ cmd = """
 jlpm eslint --ext .js,.jsx,.ts,.tsx --cache --cache-location build/.cache/eslint js/ webpack.config.js
 """
 
+[feature.tasks-lint.tasks.fix-yarn-dupes]
+description = "fix duplicates in yarn.lock"
+cmd = "jlpm yarn-berry-deduplicate --fail --strategy=fewer"
+depends-on = ["setup-js"]
+inputs = ["package.json"]
+
 [feature.tasks-lint.tasks.fix-eslint]
 cmd = """pixi r eslint-- --fix"""
 depends-on = ["setup-js"]
@@ -169,8 +172,6 @@ inputs = ["package.json"]
 description = "check package.json"
 cmd = """
 jlpm prettier-package-json --list-different
-|| echo '!!! run pixi r fix-package-json'
-&& exit 1
 """
 depends-on = ["setup-js"]
 inputs = ["package.json"]

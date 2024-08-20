@@ -64,6 +64,7 @@ jobs:
           key: |
             ${{ env.CACHE_EPOCH }}-${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock') }}
       - run: pixi run -e build ci-preflight-node
+      - run: pixi run fix-yarn-dupes
       - run: pixi run lint
 
   test:
