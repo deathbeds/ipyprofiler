@@ -1,2 +1,4 @@
-ipywidgets
+ipylab
 ipyprofiler[pyinstrument]
+ipywidgets
+sqlalchemy

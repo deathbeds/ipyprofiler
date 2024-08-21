@@ -483,6 +483,8 @@ nbconvert = "6.4.*"
 
 [feature.deps-lab.dependencies]
 jupyterlab = ">=4.0.0,<4.3"
+sqlalchemy = "2.*"
+ipylab = "*"
 
 [feature.deps-build.dependencies]
 flit-core = ">=3.9.0,<4"
