@@ -89,7 +89,13 @@ ignore = [
   "PLE1142",
   "F811",
   "S310",
+  "T203",
 ]
+"04_sqlalchemy.ipynb" = [
+  "D105",
+  "D101",
+]
+
 "tests/**/*.py" = ["S101", "SLF001", "PLR2004", "T201", "T203"]
 
 [tool.ruff.lint.isort]
