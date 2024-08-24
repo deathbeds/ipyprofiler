@@ -97,7 +97,7 @@ def test_pyinstrument_history(tmp_path: Path) -> NoReturn:
     with ps.profile(name="foo"):
         fib(10)
 
-    assert meta.layout.display == "flex"
+    assert meta.layout.display == "none"
     assert len(ps._history) == 1
     assert_files(output_folder, 1)
 
@@ -107,6 +107,7 @@ def test_pyinstrument_history(tmp_path: Path) -> NoReturn:
         fib(11)
 
     assert ps._profile.value != old_profile
+    assert meta.layout.display == "flex"
     assert len(ps._history) == 2
     assert_files(output_folder, 2)
 

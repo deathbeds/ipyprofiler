@@ -78,7 +78,7 @@ class Pyinstrument(W.Widget):
         T.dlink(
             (self, "_history"),
             (meta.layout, "display"),
-            lambda h: "flex" if h else "none",
+            lambda h: "flex" if len(h) > 1 else "none",
         )
         return box
 
