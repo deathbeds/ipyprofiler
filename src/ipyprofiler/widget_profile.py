@@ -18,7 +18,9 @@ from .base import IPyProfilerBase
 class ProfileJSON(IPyProfilerBase):
     """A widget containing speedscope-compatible JSON."""
 
-    value = T.Unicode(allow_none=True).tag(sync=True)
+    value: str = T.Unicode(allow_none=True).tag(sync=True)
+
+    name: str = T.Unicode().tag(sync=True)
     json_rewrites: dict[str, Any] = T.Dict(
         help="regular expressions to replace in raw JSON"
     )

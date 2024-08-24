@@ -10,3 +10,4 @@ src/_d/
 untitled.*
 Untitled.*
 examples/**/*.tar.gz
+examples/**/_pyinstrument*/

@@ -49,9 +49,7 @@ function transform(/** @type {Buffer} */ content, /** @type {string} */ absolute
 }
 
 module.exports = /** @type { import('webpack').Configuration } */ {
-  output: {
-    clean: true,
-  },
+  output: { clean: true },
   devtool: 'source-map',
   module: { rules: [{ test: /\.js$/, use: 'source-map-loader' }] },
   plugins: [

@@ -1,50 +1,10 @@
 import { BoxModel, BoxView } from '@jupyter-widgets/controls';
-import { FlamegraphPanel } from './renderer';
-import { NAME, STYLE, VERSION, WIDGET_DEFAULTS } from './tokens';
+import { FlamegraphPanel } from '../renderer';
+import { NAME, STYLE, VERSION, WIDGET_DEFAULTS } from '../tokens';
 
-import {
-  unpack_models as deserialize,
-  DOMWidgetModel,
-  DOMWidgetView,
-} from '@jupyter-widgets/base';
+import { unpack_models as deserialize } from '@jupyter-widgets/base';
 
-export class ProfileJSONModel extends DOMWidgetModel {
-  static model_name = 'ProfileJSONModel';
-  static model_module = NAME;
-  static model_module_version = VERSION;
-  static view_name = 'ProfileJSONView';
-  static view_module = NAME;
-  static view_module_version = VERSION;
-
-  defaults() {
-    return {
-      ...super.defaults,
-      ...WIDGET_DEFAULTS,
-      _model_name: ProfileJSONModel.model_name,
-      _view_name: ProfileJSONModel.view_name,
-    };
-  }
-}
-
-export class ProfileJSONView extends DOMWidgetView {
-  protected _pre: HTMLPreElement | null = null;
-
-  initialize(parameters: any) {
-    super.initialize(parameters);
-    this.el.classList.add(STYLE.widgetFileView);
-    this.update();
-  }
-
-  update() {
-    let { _pre } = this;
-    if (_pre == null) {
-      _pre = this._pre = document.createElement('pre');
-      this.el.appendChild(this._pre);
-    }
-
-    _pre.innerHTML = this.model.get('value') || 'None';
-  }
-}
+import { ProfileJSONModel } from './json';
 
 export class FlamegraphModel extends BoxModel {
   static model_name = 'FlamegraphModel';

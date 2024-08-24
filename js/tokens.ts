@@ -32,6 +32,7 @@ export namespace STYLE {
   export const panel = `${_base}Panel`;
   export const widgetView = `${_base}View`;
   export const widgetFileView = `${_base}FileView`;
+  export const widgetCollectionView = `${_base}CollectionView`;
 }
 
 export const WIDGET_DEFAULTS = {

@@ -144,17 +144,18 @@
         "error",
         {
           "allow": [
-            "_model_module",
             "_model_module_version",
+            "_model_module",
             "_model_name",
-            "_view_module",
             "_view_module_version",
+            "_view_module",
             "_view_name",
-            "model_module",
             "model_module_version",
+            "model_module",
             "model_name",
-            "view_module",
+            "unpack_models",
             "view_module_version",
+            "view_module",
             "view_name"
           ]
         }
