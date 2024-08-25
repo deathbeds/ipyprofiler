@@ -15,6 +15,7 @@ HERE = Path(__file__).parent
 FRAG = f"share/jupyter/labextensions/{__ns__}"
 IN_TREE = (HERE / "../_d").resolve() / FRAG
 IN_PREFIX = Path(sys.prefix) / FRAG
+UTF8 = {"encoding": "utf-8"}
 
 __prefix__ = IN_TREE if IN_TREE.exists() else IN_PREFIX
 
@@ -39,7 +40,7 @@ class MermaidDirection(Enum):
 class DOMClasses(Enum):
     """Classes added to widgets from the python side."""
 
-    pyinstrument_tab = "jprf-Pyinstrument-Tab"
+    pyinstrument = "jprf-Pyinstrument"
     callgraph = "jprf-Callgraph"
     callgraph_options = "jprf-Callgraph-Options"
 

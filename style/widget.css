@@ -7,18 +7,18 @@
   flex: 1;
 }
 
-.jp-OutputArea-output:has(.jprf-Pyinstrument-Tab) {
+.jp-OutputArea-output:has(.jprf-Pyinstrument) {
   overflow-y: hidden;
 }
 
-.jprf-Pyinstrument-Tab {
+.jprf-Pyinstrument {
   margin: 0;
   max-height: 100vh;
   flex: 1;
   overflow-y: hidden;
 }
 
-.jupyter-widgets.widget-tab.jprf-Pyinstrument-Tab > .widget-tab-contents {
+.jprf-Pyinstrument .jupyter-widgets.widget-tab .widget-tab-contents {
   padding: 0;
 }
 
