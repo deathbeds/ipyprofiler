@@ -84,12 +84,17 @@ class Pyinstrument(W.Widget):
 
     def history(self) -> W.Select:
         """Build and link a history navigator."""
-        dropdown = W.Select(description="profiles", rows=1)
+        dropdown = W.Select(description="profile", rows=1)
 
         T.dlink(
             (self, "_history"),
             (dropdown, "options"),
             lambda h: {hi.name: hi for hi in h},
+        )
+        T.dlink(
+            (self, "_history"),
+            (dropdown, "value"),
+            lambda h: h[-1] if h else None,
         )
         T.dlink(
             (dropdown, "value"),
@@ -171,7 +176,10 @@ class Pyinstrument(W.Widget):
         path = self.output_folder / filename
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(new_json, **UTF8)
-        self._history += (HistoryItem(path=path, name=self.name, value=new_json),)
+        self._history = (
+            *self._history,
+            HistoryItem(path=path, name=self.name, value=new_json),
+        )
 
     @T.default("_profiler")
     def _default_profiler(self) -> Profiler:

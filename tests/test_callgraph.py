@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def a_callgraph() -> Callgraph:
     """Provide a callgraph."""
     from ipyprofiler import Callgraph

@@ -514,20 +514,23 @@ pytest-html = "*"
 nbconvert-core = "*"
 ansi2html = "*"
 
+[feature.deps-lite.dependencies]
+ipywidgets = "8.1.3"
+jupyterlab_widgets = "3.0.12"
+jupyterlite-core = "0.4.*"
+jupyterlite-pyodide-kernel = "0.4.*"
+python-libarchive-c = "*"
+
 [feature.deps-docs.dependencies]
-ipywidgets = "*"
-jupyterlite-core = "0.3.*"
-jupyterlite-pyodide-kernel = "0.3.*"
 myst-nb = "*"
 pydata-sphinx-theme = "*"
-python-libarchive-c = "*"
 
 # envs ########################################################################
 
 [environments]
 build = ["deps-build", "deps-dist", "deps-lab", "deps-node", "deps-run", "tasks-build"]
 lint = ["deps-lint", "deps-node", "deps-lab", "tasks-lint"]
-docs = ["deps-docs", "deps-lab", "deps-build", "tasks-docs"]
+docs = ["deps-docs", "deps-lab", "deps-build", "tasks-docs", "deps-lite"]
 lab = [
   "deps-build",
   "deps-dist",

@@ -1,4 +1,3 @@
-ipylab
 ipyprofiler[pyinstrument]
-ipywidgets
-sqlalchemy
+ipywidgets==8.1.3
+widgetsnbextension==4.0.11

@@ -18,6 +18,10 @@
   overflow-y: hidden;
 }
 
+.jprf-Pyinstrument .jupyter-widget-TabPanel {
+  margin: 0;
+}
+
 .jprf-Pyinstrument .jupyter-widgets.widget-tab .widget-tab-contents {
   padding: 0;
 }

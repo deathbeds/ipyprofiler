@@ -35,7 +35,7 @@ def a_notebook(request: pytest.FixtureRequest) -> Path:
     return EXAMPLES / f"{request.param}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def a_notebook_exporter() -> Generator[nbconvert.NotebookExporter, None, None]:
     """Provide an executing notebook exporter."""
     env_patch = {
