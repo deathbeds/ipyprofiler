@@ -150,7 +150,7 @@ jlpm eslint --ext .js,.jsx,.ts,.tsx --cache --cache-location build/.cache/eslint
 description = "fix duplicates in yarn.lock"
 cmd = "jlpm yarn-berry-deduplicate --fail --strategy=fewer"
 depends-on = ["setup-js"]
-inputs = ["package.json"]
+inputs = ["package.json", "yarn.lock"]
 
 [feature.tasks-lint.tasks.fix-eslint]
 cmd = """pixi r eslint-- --fix"""
@@ -515,8 +515,7 @@ nbconvert-core = "*"
 ansi2html = "*"
 
 [feature.deps-lite.dependencies]
-ipywidgets = "8.1.3"
-jupyterlab_widgets = "3.0.12"
+ipywidgets = "8.1.5"
 jupyterlite-core = "0.4.*"
 jupyterlite-pyodide-kernel = "0.4.*"
 python-libarchive-c = "*"
